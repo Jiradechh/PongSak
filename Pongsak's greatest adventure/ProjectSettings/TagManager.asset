@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - ResetTrigger
+  - evironmet
+  - Wall
+  - ReloadItem
+  - Boss
+  - RespawnPoint
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Back
+  - Water
+  - UI
+  - Enemy
+  - Ground
+  - Players
+  - Pillar
+  - Light
+  - Fade3D
+  - Fade2D
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: BG
+    uniqueID: 1719107091
+    locked: 0
+  - name: MG
+    uniqueID: 1302482279
+    locked: 0
+  - name: FG
+    uniqueID: 2576878515
+    locked: 0
