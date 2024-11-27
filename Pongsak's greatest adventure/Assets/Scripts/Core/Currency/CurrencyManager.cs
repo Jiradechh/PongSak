@@ -15,11 +15,11 @@ public class CurrencyManager : Singleton<CurrencyManager>
 
     private void Start()
     {
-        if (SaveManager.Instance.onContinue)
+       /* if (SaveManager.Instance.onContinue)
         {
             //Load Savegems
             gems = SaveManager.Instance.saveData.gems;
-        }
+        }*/
     }
 
     public void AddGems(int amount)

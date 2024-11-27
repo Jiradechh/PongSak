@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
+using MyInterface;
 
 public enum EnemyType
 {
@@ -10,7 +11,7 @@ public enum EnemyType
     Ranged,
 }
 
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, IDamageable , TakeDamage
 {
     #region Variables
     NavMeshAgent navMash;

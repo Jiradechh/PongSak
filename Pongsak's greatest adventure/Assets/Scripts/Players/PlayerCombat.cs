@@ -60,12 +60,12 @@ public class PlayerCombat : Singleton<PlayerCombat>
 
     void Start()
     {
-        if (SaveManager.Instance.onContinue)
+       /* if (SaveManager.Instance.onContinue)
         {
             //Load Savegems
             baseLightAttackDamage = SaveManager.Instance.saveData.baseLightAttackDamage;
             baseHeavyAttackDamage = SaveManager.Instance.saveData.baseHeavyAttackDamage;
-        }
+        }*/
 
 
 

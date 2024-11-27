@@ -45,6 +45,7 @@ public class ShopSystem : MonoBehaviour
     private float lastInputTime = 0f;
 
     private Coroutine idleAnimationCoroutine;
+    private bool OnAniamtion = false;
     #endregion
 
     #region Unity Callbacks
@@ -109,14 +110,18 @@ public class ShopSystem : MonoBehaviour
         {
             playerIsNear = true;
             StopCoroutine(idleAnimationCoroutine);
-            StartCoroutine(PlayPlayerNearAnimation());
-
+            if (!OnAniamtion)
+            {
+                OnAniamtion = true;
+                StartCoroutine(PlayPlayerNearAnimation());
+            }
             if (proximityIndicatorUI != null)
             {
                 proximityIndicatorUI.SetActive(true);
             }
         }
     }
+
 
     private void OnTriggerExit(Collider other)
     {
@@ -159,6 +164,8 @@ public class ShopSystem : MonoBehaviour
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
 
         animator.Play(defaultIdleAnimation);
+
+        OnAniamtion = false;
     }
     #endregion
 

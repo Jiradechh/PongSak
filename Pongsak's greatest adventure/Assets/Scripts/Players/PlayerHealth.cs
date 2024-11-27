@@ -1,10 +1,11 @@
+using MyInterface;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PlayerHealth : Singleton<PlayerHealth>
+public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
 {
     #region Public Variables
     public int maxHealth = 100;
@@ -38,11 +39,11 @@ public class PlayerHealth : Singleton<PlayerHealth>
     #region Unity Callbacks
     void Start()
     {
-        if (SaveManager.Instance.onContinue)
+        /*if (SaveManager.Instance.onContinue)
         {
             //Load Savegems
             maxHealth = SaveManager.Instance.saveData.maxHealth;
-        }
+        }*/
 
         currentHealth = maxHealth;
         heartUI.UpdateHearts(currentHealth, maxHealth);

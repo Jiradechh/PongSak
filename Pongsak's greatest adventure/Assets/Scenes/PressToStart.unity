@@ -2382,7 +2382,6 @@ MonoBehaviour:
   saveData:
     gems: 0
     maxHealth: 0
-    currentHealth: 0
     baseLightAttackDamage: 0
     baseHeavyAttackDamage: 0
   onContinue: 0
