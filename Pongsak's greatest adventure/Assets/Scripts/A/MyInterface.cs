@@ -4,5 +4,4 @@ namespace MyInterface
     {
         void TakeDamage(int damage);
     }
-
 }

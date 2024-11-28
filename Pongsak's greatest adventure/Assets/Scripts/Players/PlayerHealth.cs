@@ -86,6 +86,17 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
         }
     }
 
+    public void KnockBack()
+    {
+        StartCoroutine(DelayKnockBack());
+    }
+
+    IEnumerator DelayKnockBack()
+    {
+        yield return new WaitForSeconds(0.2f);
+        playerController.rb.Sleep();
+        playerController.rb.velocity = Vector3.zero;
+    }
     private void Die()
     {
         if (isDead) return;

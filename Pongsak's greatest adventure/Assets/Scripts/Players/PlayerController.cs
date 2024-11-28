@@ -52,7 +52,7 @@ public class PlayerController : Singleton<PlayerController>
 
     void Update()
     {
-
+        Debug.Log(rb.velocity);
         if (ShopSystemGold.IsShopOpen || ShopSystemGold.IsPopupActive || ShopSystem.IsShopOpen)
         {
             
