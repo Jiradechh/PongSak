@@ -32,6 +32,12 @@ public class ObjectFadeController : Singleton<ObjectFadeController>
         else
         {
             Debug.LogError("Cinemachine Virtual Camera not found! Make sure there is a Cinemachine camera in the scene.");
+            Debug.Log("Checking all objects for CinemachineVirtualCamera...");
+
+            foreach (var obj in FindObjectsOfType<CinemachineVirtualCamera>())
+            {
+                Debug.Log($"Found CinemachineVirtualCamera on object: {obj.gameObject.name}");
+            }
         }
     }
 

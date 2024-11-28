@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ShopSystem : MonoBehaviour
@@ -20,16 +21,10 @@ public class ShopSystem : MonoBehaviour
 
     public GameObject[] itemButtons;
     public Color normalColor = Color.white;
-    public Color highlightColor = Color.yellow;
+    public Color selectedColor = Color.red;
     public int[] gemPrices;
     public PlayerHealth playerHealth;
-
-    public Animator animator;
-    public string defaultIdleAnimation = "Idle1";
-    public string[] specialIdleAnimations;
-    public string playerNearAnimationName;
-
-    private PlayerCombat playerCombat;
+    public PlayerCombat playerCombat;
 
     public TextMeshProUGUI lightAttackDamageText;
     public TextMeshProUGUI maxHealthText;
@@ -44,8 +39,7 @@ public class ShopSystem : MonoBehaviour
     private float inputDelay = 0.2f;
     private float lastInputTime = 0f;
 
-    private Coroutine idleAnimationCoroutine;
-    private bool OnAniamtion = false;
+    public static bool IsShopOpen { get; private set; } = false;
     #endregion
 
     #region Unity Callbacks
@@ -61,11 +55,6 @@ public class ShopSystem : MonoBehaviour
         }
 
         playerHealth = FindObjectOfType<PlayerHealth>();
-        playerCombat = FindObjectOfType<PlayerCombat>();
-
-        idleAnimationCoroutine = StartCoroutine(PlayRandomIdleAnimations());
-
-        
         UpdateCombatStatsUI();
     }
 
@@ -73,25 +62,20 @@ public class ShopSystem : MonoBehaviour
     {
         if (lightAttackDamageText != null)
         {
-            lightAttackDamageText.text = "" + playerCombat.baseLightAttackDamage.ToString();
+            lightAttackDamageText.text = playerCombat.baseLightAttackDamage.ToString();
         }
 
         if (maxHealthText != null)
         {
-            maxHealthText.text = "" + playerHealth.maxHealth.ToString();
+            maxHealthText.text = playerHealth.maxHealth.ToString();
         }
     }
 
     private void Update()
     {
-        if (playerIsNear && (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Joystick1Button5)))
+        if (playerIsNear && Input.GetKeyDown(KeyCode.Joystick1Button5))
         {
             ToggleShop(!isShopOpen);
-        }
-
-        if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
-        {
-            ToggleShop(false);
         }
 
         if (isShopOpen && !confirmationOpen)
@@ -109,12 +93,7 @@ public class ShopSystem : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerIsNear = true;
-            StopCoroutine(idleAnimationCoroutine);
-            if (!OnAniamtion)
-            {
-                OnAniamtion = true;
-                StartCoroutine(PlayPlayerNearAnimation());
-            }
+
             if (proximityIndicatorUI != null)
             {
                 proximityIndicatorUI.SetActive(true);
@@ -122,61 +101,28 @@ public class ShopSystem : MonoBehaviour
         }
     }
 
-
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             playerIsNear = false;
-            ToggleShop(false);
-            idleAnimationCoroutine = StartCoroutine(PlayRandomIdleAnimations());
 
             if (proximityIndicatorUI != null)
             {
                 proximityIndicatorUI.SetActive(false);
             }
+
+            if (isShopOpen)
+            {
+                StartCoroutine(CloseShopWithDelay(0.2f));
+            }
         }
-    }
-    #endregion
-
-    #region Animation Logic
-    private IEnumerator PlayRandomIdleAnimations()
-    {
-        animator.Play(defaultIdleAnimation);
-
-        while (!playerIsNear)
-        {
-            yield return new WaitForSeconds(6f);
-
-            string randomSpecialIdle = specialIdleAnimations[Random.Range(0, specialIdleAnimations.Length)];
-            animator.Play(randomSpecialIdle);
-
-            yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-
-            animator.Play(defaultIdleAnimation);
-        }
-    }
-
-    private IEnumerator PlayPlayerNearAnimation()
-    {
-        animator.Play(playerNearAnimationName);
-
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-
-        animator.Play(defaultIdleAnimation);
-
-        OnAniamtion = false;
     }
     #endregion
 
     #region Input Logic
     private void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            SelectItemWithMouse();
-        }
-
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -184,7 +130,6 @@ public class ShopSystem : MonoBehaviour
         {
             lastInputTime = 0;
         }
-
         if (Time.time - lastInputTime > inputDelay)
         {
             if (horizontalInput > 0.5f)
@@ -210,33 +155,54 @@ public class ShopSystem : MonoBehaviour
             }
         }
 
-        
-        if ( Input.GetKeyDown(KeyCode.Joystick1Button0))
+        if (Input.GetKeyDown(KeyCode.Joystick1Button0))
         {
-            if (currentIndex >= 0 && currentIndex < itemButtons.Length)
-            {
-                ShowConfirmationPopup();
-            }
+            ShowConfirmationPopup();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button1))
+        {
+            ToggleShop(false);
         }
     }
 
-    private void SelectItemWithMouse()
+    private void HandleConfirmationInput()
     {
-        for (int i = 0; i < itemButtons.Length; i++)
+        float horizontalInput = Input.GetAxis("Horizontal");
+
+        if (horizontalInput < 0)
         {
-            RectTransform buttonRect = itemButtons[i].GetComponent<RectTransform>();
-            if (RectTransformUtility.RectangleContainsScreenPoint(buttonRect, Input.mousePosition))
+            selectedConfirmIndex = 0;
+            UpdateConfirmationButtonSprites();
+            lastInputTime = Time.time;
+        }
+        else if (horizontalInput > 0)
+        {
+            selectedConfirmIndex = 1;
+            UpdateConfirmationButtonSprites();
+            lastInputTime = Time.time;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button0))
+        {
+            if (selectedConfirmIndex == 0)
             {
-                currentIndex = i;
-                UpdateButtonColors();
-                ShowConfirmationPopup();
-                break;
+                ConfirmPurchase();
             }
+            else
+            {
+                CancelPurchase();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button1))
+        {
+            CancelPurchase();
         }
     }
     #endregion
 
-    #region Shop Logic
+    #region Shop Navigation
     private void MoveRight()
     {
         currentIndex++;
@@ -282,48 +248,63 @@ public class ShopSystem : MonoBehaviour
         for (int i = 0; i < itemButtons.Length; i++)
         {
             Image buttonImage = itemButtons[i].GetComponent<Image>();
-            if (i == currentIndex)
-            {
-                buttonImage.color = highlightColor;
-            }
-            else
-            {
-                buttonImage.color = normalColor;
-            }
+            if (buttonImage == null) continue;
+
+            buttonImage.color = (i == currentIndex) ? selectedColor : normalColor;
         }
     }
+    #endregion
 
+    #region Confirmation Popup
     private void ShowConfirmationPopup()
     {
+        if (currentIndex < 0 || currentIndex >= itemButtons.Length)
+        {
+            Debug.LogWarning("Invalid item selected.");
+            return;
+        }
+
         confirmationOpen = true;
         confirmationPopupUI.SetActive(true);
-        Time.timeScale = 0f;
+
+        TextMeshProUGUI confirmationText = confirmationPopupUI.GetComponentInChildren<TextMeshProUGUI>();
+        if (confirmationText != null)
+        {
+            string itemName = itemButtons[currentIndex].name;
+            int itemPrice = gemPrices[currentIndex];
+            confirmationText.text = $"{itemPrice}";
+        }
+
         selectedConfirmIndex = 0;
         UpdateConfirmationButtonSprites();
+        Time.timeScale = 0f;
     }
 
-    public void ConfirmPurchase()
+    private void ConfirmPurchase()
     {
-        confirmationOpen = false;
-        confirmationPopupUI.SetActive(false);
-
-        int gemPrice = gemPrices[currentIndex];
-
-        if (CurrencyManager.Instance.SpendGems(gemPrice))
+        if (currentIndex < 0 || currentIndex >= itemButtons.Length)
         {
-            Debug.Log("Purchased item with Gems: " + itemButtons[currentIndex].name);
+            Debug.LogWarning("Invalid item selected.");
+            CloseConfirmationPopup();
+            return;
+        }
 
-            
+        int itemPrice = gemPrices[currentIndex];
+        string itemName = itemButtons[currentIndex].name;
+
+        if (CurrencyManager.Instance.SpendGems(itemPrice))
+        {
+            Debug.Log($"Purchased {itemName} for {itemPrice} gems.");
+
             if (currentIndex == 0)
             {
                 playerHealth.IncreaseMaxHealth(25);
-                Debug.Log("Player's max HP increased by 25");
+                Debug.Log("Player's max HP increased by 25.");
             }
-            
-            else if (currentIndex == 1) 
+            else if (currentIndex == 1)
             {
                 playerCombat.baseLightAttackDamage += 10;
-                Debug.Log("Player's light attack damage increased by 10");
+                Debug.Log("Player's light attack damage increased by 10.");
             }
 
             UpdateCombatStatsUI();
@@ -333,78 +314,70 @@ public class ShopSystem : MonoBehaviour
             Debug.Log("Not enough Gems to purchase this item.");
         }
 
-        Time.timeScale = 1f;
-        CloseShop();
+        CloseAllUI();
+    }
+    private void CancelPurchase()
+    {
+        Debug.Log("Purchase cancelled.");
+        CloseConfirmationPopup();
     }
 
-    public void CancelPurchase()
+    private void CloseConfirmationPopup()
     {
         confirmationOpen = false;
         confirmationPopupUI.SetActive(false);
         Time.timeScale = 1f;
-        CloseShop();
     }
-
-    public void ToggleShop(bool open)
+    private void CloseAllUI()
     {
-        isShopOpen = open;
-        shopUI.SetActive(open);
-        Time.timeScale = open ? 0f : 1f;
-    }
-
-    private void CloseShop()
-    {
-        isShopOpen = false;
         shopUI.SetActive(false);
+        confirmationPopupUI.SetActive(false);
+
+        isShopOpen = false;
+        confirmationOpen = false;
+        IsShopOpen = false;
+
         Time.timeScale = 1f;
     }
-    #endregion
-
-    #region Confirmation Popup Logic
-    private void HandleConfirmationInput()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
-
-        if (horizontalInput != 0 && Time.time - lastInputTime > inputDelay)
-        {
-            selectedConfirmIndex = (selectedConfirmIndex == 0) ? 1 : 0;
-            UpdateConfirmationButtonSprites();
-            lastInputTime = Time.time;
-        }
-
-        if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Joystick1Button0))
-        {
-            if (selectedConfirmIndex == 0)
-            {
-                ConfirmPurchase();
-            }
-            else
-            {
-                CancelPurchase();
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Joystick1Button1))
-        {
-            CancelPurchase();
-        }
-    }
-
     private void UpdateConfirmationButtonSprites()
     {
         Image confirmImage = confirmButton.GetComponent<Image>();
         Image cancelImage = cancelButton.GetComponent<Image>();
 
-        if (selectedConfirmIndex == 0)
+        confirmImage.sprite = (selectedConfirmIndex == 0) ? confirmSelect : confirmNormal;
+        cancelImage.sprite = (selectedConfirmIndex == 1) ? cancelSelect : cancelNormal;
+    }
+    #endregion
+
+    #region Shop Logic
+
+    public void ToggleShop(bool open)
+    {
+        if (!playerIsNear && open) return;
+
+        if (open)
         {
-            confirmImage.sprite = confirmSelect;
-            cancelImage.sprite = cancelNormal;
+            IsShopOpen = true;
+            isShopOpen = true;
+            shopUI.SetActive(true);
+
+            currentIndex = 0;
+            UpdateButtonColors();
+
+            Time.timeScale = 0f;
         }
         else
         {
-            confirmImage.sprite = confirmNormal;
-            cancelImage.sprite = cancelSelect;
+            StartCoroutine(CloseShopWithDelay(0.2f));
         }
+    }
+    private IEnumerator CloseShopWithDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        shopUI.SetActive(false);
+        isShopOpen = false;
+        IsShopOpen = false;
+        Time.timeScale = 1f;
     }
     #endregion
 }

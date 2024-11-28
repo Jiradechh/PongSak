@@ -1,69 +1,120 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuScripts : MonoBehaviour
 {
+    public static MainMenuScripts Instance;
+
     [Header("Main Menu Elements")]
+    public Button continueButton;
     public Button startButton;
     public Button exitButton;
 
-    private Button[] menuButtons;
-    private int selectedIndex = 0;
+    private List<Button> menuButtons;
+    private int selectedButtonIndex = 0;
+
+    private float inputDelay = 0.3f;
+    private float lastInputTime = 0f;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
+        bool hasSaveGame = PlayerPrefs.GetInt("MaxHealth", 0) > 0;
+        SetContinueButtonState(hasSaveGame);
+
+        continueButton.onClick.AddListener(ContinueGame);
         startButton.onClick.AddListener(() => LoadScene("Lobby"));
         exitButton.onClick.AddListener(ExitGame);
 
-        // Assign menu buttons
-        menuButtons = new Button[] { startButton, exitButton };
-        HighlightButton(selectedIndex); // Highlight the first button
+        menuButtons = new List<Button> { continueButton, startButton, exitButton };
+        HighlightButton(selectedButtonIndex);
     }
 
     private void Update()
     {
-        HandleMenuNavigation();
+        if (Time.time - lastInputTime > inputDelay)
+        {
+            HandleMenuNavigation();
+        }
+    }
+
+    public void SetContinueButtonState(bool isActive)
+    {
+        if (continueButton == null)
+        {
+            Debug.LogError("Continue Button is not assigned in MainMenuScripts!");
+            return;
+        }
+
+        continueButton.gameObject.SetActive(isActive);
     }
 
     private void HandleMenuNavigation()
     {
-        float verticalInput = Input.GetAxis("Vertical");
-
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || verticalInput > 0.5f)
-            Navigate(-1); // Up
-
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || verticalInput < -0.5f)
-            Navigate(1); // Down
-
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Submit"))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetAxis("Vertical") > 0.5f)
         {
-            menuButtons[selectedIndex].onClick.Invoke();
+            Navigate(-1);
+            lastInputTime = Time.time;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetAxis("Vertical") < -0.5f)
+        {
+            Navigate(1);
+            lastInputTime = Time.time;
+        }
+
+        if (Input.GetButtonDown("Submit") || Input.GetKeyDown(KeyCode.Return))
+        {
+            var selectedButton = menuButtons[selectedButtonIndex];
+            if (selectedButton.gameObject.activeSelf)
+            {
+                selectedButton.onClick.Invoke();
+                lastInputTime = Time.time;
+            }
         }
     }
 
     private void Navigate(int direction)
     {
-        selectedIndex = (selectedIndex + direction + menuButtons.Length) % menuButtons.Length;
-        HighlightButton(selectedIndex);
+        selectedButtonIndex = (selectedButtonIndex + direction + menuButtons.Count) % menuButtons.Count;
+        HighlightButton(selectedButtonIndex);
     }
 
     private void HighlightButton(int index)
     {
-        for (int i = 0; i < menuButtons.Length; i++)
+        for (int i = 0; i < menuButtons.Count; i++)
         {
             var colors = menuButtons[i].colors;
-            colors.normalColor = i == index ? Color.yellow : Color.white;
+            colors.normalColor = i == index ? Color.red : Color.white;
             menuButtons[i].colors = colors;
         }
+    }
+
+    private void ContinueGame()
+    {
+        SaveManager.Instance.onContinue = true;
+        SceneManager.LoadScene("Lobby");
     }
 
     private void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
+
     private void ExitGame()
     {
         Application.Quit();

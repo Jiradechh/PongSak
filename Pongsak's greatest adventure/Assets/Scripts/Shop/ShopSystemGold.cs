@@ -11,21 +11,21 @@ public class ShopSystemGold : MonoBehaviour
 {
     #region Public Variables
     [Header("Button Sprites")]
-    public Sprite buySelectedSprite; // Buy button when selected
-    public Sprite buyNotSelectedSprite; // Buy button when not selected
-    public Sprite cancelSelectedSprite; // Cancel button when selected
-    public Sprite cancelNotSelectedSprite; // Cancel button when not selected
+    public Sprite buySelectedSprite; 
+    public Sprite buyNotSelectedSprite;
+    public Sprite cancelSelectedSprite;
+    public Sprite cancelNotSelectedSprite;
 
-    public int selectedButtonIndex = 0; // 0 = Buy, 1 = Cancel
-    private Image buyButtonImage; // Reference to the Buy button's Image component
-    private Image cancelButtonImage; // Reference to the Cancel button's Image component
+    public int selectedButtonIndex = 0;
+    private Image buyButtonImage;
+    private Image cancelButtonImage; 
 
     public GameObject shopUI;
     public GameObject proximityIndicatorUI;
-    public GameObject confirmationPopupUI; // Confirmation popup UI
-    public TextMeshProUGUI confirmationText; // TextMeshPro to display item price
-    public Button confirmButton; // Confirm purchase button
-    public Button cancelButton; // Cancel button
+    public GameObject confirmationPopupUI;
+    public TextMeshProUGUI confirmationText;
+    public Button confirmButton;
+    public Button cancelButton;
     public GameObject[] itemButtons;
     public Transform[] spawnPoints;
     public Color normalColor = Color.white;
@@ -48,6 +48,12 @@ public class ShopSystemGold : MonoBehaviour
     private int selectedItemIndex = -1;
 
     private bool isPopupActive = false;
+    private List<string> purchasedItems = new List<string>();
+    public static bool IsShopOpen { get; private set; } = false;
+    public static bool IsPopupActive { get; private set; } = false;
+    private bool hasInitializedItems = false;
+    private List<GameObject> selectedItems = new List<GameObject>();
+    private bool hasSelectedItems = false;
     #endregion
 
     #region Unity Callbacks
@@ -65,6 +71,7 @@ public class ShopSystemGold : MonoBehaviour
         {
             proximityIndicatorUI.SetActive(false);
         }
+
         if (cinemachineCamera == null)
         {
             GameObject camObject = GameObject.Find("CV CAM");
@@ -90,6 +97,8 @@ public class ShopSystemGold : MonoBehaviour
         goldPrices[8] = 100; // Bomb
         goldPrices[9] = 100; // Stun
         goldPrices[10] = 100; // CamSpeed
+
+        InitializeItems();
     }
 
     private void Update()
@@ -255,9 +264,13 @@ public class ShopSystemGold : MonoBehaviour
         {
             confirmationText.text = $"{selectedItemPrice}";
         }
+        else
+        {
+            Debug.LogWarning("confirmationText is not assigned!");
+        }
 
         confirmationPopupUI.SetActive(true);
-        isPopupActive = true; 
+        isPopupActive = true;
         selectedButtonIndex = 0;
         UpdateButtonSprites();
         Time.timeScale = 0f;
@@ -266,20 +279,36 @@ public class ShopSystemGold : MonoBehaviour
     private void CloseConfirmationPopup()
     {
         confirmationPopupUI.SetActive(false);
-        isPopupActive = false; 
+        StartCoroutine(ClosePopupWithDelay(0.5f));
+    }
+    private IEnumerator ClosePopupWithDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        isPopupActive = false;
+        IsPopupActive = false;
         Time.timeScale = 1f;
     }
-
+    private bool isPurchaseInProgress = false;
     public void ConfirmPurchase()
     {
-        if (SpendGoldAndValidate(selectedItemName))
+        int goldPriceIndex = System.Array.IndexOf(itemButtons.Select(b => b.name).ToArray(), selectedItemName);
+        if (goldPriceIndex < 0 || goldPriceIndex >= goldPrices.Length)
         {
-            PurchaseItemLogic(selectedItemName);
+            Debug.LogError($"Gold price not found for item: {selectedItemName}");
+            CloseConfirmationPopup();
+            return;
         }
-
+        int goldPrice = goldPrices[goldPriceIndex];
+        if (!CurrencyManager.Instance.SpendGold(goldPrice))
+        {
+            Debug.Log($"Not enough Gold to purchase: {selectedItemName}");
+            CloseConfirmationPopup();
+            return;
+        }
+        PurchaseItemLogic(selectedItemName);
         CloseConfirmationPopup();
+        ToggleShop(false);
     }
-
     public void CancelPurchase()
     {
         CloseConfirmationPopup();
@@ -355,98 +384,93 @@ public class ShopSystemGold : MonoBehaviour
             instantiatedButtons[i].GetComponent<Image>().color = targetColor;
         }
     }
+    private void InitializeItems()
+    {
+        if (hasSelectedItems) return;
 
+        List<GameObject> availableItems = new List<GameObject>();
+
+        foreach (var item in itemButtons)
+        {
+            if (!purchasedItems.Contains(item.name))
+            {
+                availableItems.Add(item);
+            }
+        }
+
+        while (selectedItems.Count < 3 && availableItems.Count > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, availableItems.Count);
+            selectedItems.Add(availableItems[randomIndex]);
+            availableItems.RemoveAt(randomIndex);
+        }
+
+        hasSelectedItems = true;
+    }
     private void PurchaseItemLogic(string itemName)
     {
+        if (!purchasedItems.Contains(itemName))
+        {
+            purchasedItems.Add(itemName);
+            selectedItems.RemoveAll(item => item.name == itemName);
+        }
+
         switch (itemName)
         {
             case "MaxDash":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerController.Instance.IncreaseMaxDashes();
-                    Debug.Log("Max dashes purchased");
-                }
+                PlayerController.Instance.IncreaseMaxDashes();
+                Debug.Log("Max dashes purchased");
                 break;
 
             case "MaxPro":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerCombat.Instance.IncreaseMaxProjectiles();
-                    Debug.Log("Max projectiles purchased");
-                }
+                PlayerCombat.Instance.IncreaseMaxProjectiles();
+                Debug.Log("Max projectiles purchased");
                 break;
 
             case "Slow":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerCombat.Instance.EnableSlowEffect();
-                    Debug.Log("Slow Effect purchased!");
-                }
+                PlayerCombat.Instance.EnableSlowEffect();
+                Debug.Log("Slow Effect purchased!");
                 break;
 
             case "UpRateGold":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    CurrencyManager.Instance.EnableGoldDrop();
-                    Debug.Log("Gold drop feature purchased");
-                }
+                CurrencyManager.Instance.EnableGoldDrop();
+                Debug.Log("Gold drop feature purchased");
                 break;
 
             case "UpHp":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerHealth.Instance.RestoreToMaxHealth();
-                    Debug.Log("HpUp purchased");
-                }
+                PlayerHealth.Instance.RestoreToMaxHealth();
+                Debug.Log("HpUp purchased");
                 break;
 
             case "Arrmor":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerHealth.Instance.ActivateAvoidNextHit();
-                    Debug.Log("Arrmor purchased");
-                }
+                PlayerHealth.Instance.ActivateAvoidNextHit();
+                Debug.Log("Arrmor purchased");
                 break;
 
             case "Carti":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerHealth.Instance.hasCarti = true;
-                    Debug.Log("Carti purchased");
-                }
+                PlayerHealth.Instance.hasCarti = true;
+                Debug.Log("Carti purchased");
                 break;
 
             case "DashRange":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerController.Instance.IncreaseDashSpeed(5f);
-                    Debug.Log("DashRange purchased");
-                }
+                PlayerController.Instance.IncreaseDashSpeed(5f);
+                Debug.Log("DashRange purchased");
                 break;
 
             case "Bomb":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerCombat.Instance.EnableAOEProjectiles();
-                    Debug.Log("Bomb purchased");
-                }
+                PlayerCombat.Instance.EnableAOEProjectiles();
+                Debug.Log("Bomb purchased");
                 break;
 
             case "Stun":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    PlayerCombat.Instance.EnableStunEffect();
-                    Debug.Log("Stun purchased");
-                }
+                PlayerCombat.Instance.EnableStunEffect();
+                Debug.Log("Stun purchased");
                 break;
 
             case "CamSpeed":
-                if (SpendGoldAndValidate(itemName))
-                {
-                    AdjustCameraFOV(10f);
-                    PlayerController.Instance.SetMoveSpeed(3.5f);
-                    Debug.Log("CamSpeed purchased");
-                }
+                AdjustCameraFOV(10f);
+                PlayerController.Instance.SetMoveSpeed(3.5f);
+                Debug.Log("CamSpeed purchased");
                 break;
 
             default:
@@ -454,7 +478,6 @@ public class ShopSystemGold : MonoBehaviour
                 break;
         }
     }
-
     private void AdjustCameraFOV(float newFOV)
     {
         if (cinemachineCamera != null)
@@ -490,43 +513,48 @@ public class ShopSystemGold : MonoBehaviour
 
     public void ToggleShop(bool open)
     {
-        isShopOpen = open;
-        shopUI.SetActive(open);
-        Time.timeScale = open ? 0f : 1f;
-
         if (open)
         {
+            isShopOpen = true;
+            IsShopOpen = true;
+            shopUI.SetActive(true);
+            Time.timeScale = 0f;
+
             SpawnItemButtons();
         }
         else
         {
-            DestroyItemButtons();
+            StartCoroutine(CloseShopWithDelay(0.2f));
         }
     }
+
+    private IEnumerator CloseShopWithDelay(float delay)
+    {
+        shopUI.SetActive(false);
+        DestroyItemButtons();
+        yield return new WaitForSecondsRealtime(delay);
+        isShopOpen = false;
+        IsShopOpen = false;
+        Time.timeScale = 1f;
+    }
+
 
     private void SpawnItemButtons()
     {
         DestroyItemButtons();
 
-        List<int> chosenIndices = new List<int>();
-
-        while (chosenIndices.Count < 3)
+        if (selectedItems.Count == 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, itemButtons.Length);
-            if (!chosenIndices.Contains(randomIndex))
-            {
-                chosenIndices.Add(randomIndex);
-            }
+            Debug.LogWarning("No items available to display in shop.");
+            shopUI.SetActive(false);
+            return;
         }
-
-        for (int i = 0; i < spawnPoints.Length && i < chosenIndices.Count; i++)
+        for (int i = 0; i < spawnPoints.Length && i < selectedItems.Count; i++)
         {
-            int itemIndex = chosenIndices[i];
-            GameObject selectedItem = itemButtons[itemIndex];
+            GameObject selectedItem = selectedItems[i];
 
             instantiatedButtons[i] = Instantiate(selectedItem, spawnPoints[i].position, Quaternion.identity);
             instantiatedButtons[i].transform.SetParent(shopUI.transform);
-
             instantiatedButtons[i].name = selectedItem.name;
         }
 

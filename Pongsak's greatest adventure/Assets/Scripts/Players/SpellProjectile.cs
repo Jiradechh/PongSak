@@ -131,6 +131,7 @@ public class SpellProjectile : MonoBehaviour
 
         Enemy enemyComponent = enemy.GetComponent<Enemy>();
         BirdsBossEnemy bossComponent = enemy.GetComponent<BirdsBossEnemy>();
+        TailObject tailObjectComponent = enemy.GetComponent<TailObject>();
 
         if (enemyComponent != null)
         {
@@ -146,6 +147,11 @@ public class SpellProjectile : MonoBehaviour
         else if (bossComponent != null)
         {
             bossComponent.ApplyBuff(damageBuff);
+            Debug.Log("Projectile attached to boss: " + enemy.name);
+        }
+        else if (tailObjectComponent != null)
+        {
+            tailObjectComponent.ApplyBuff(damageBuff);
             Debug.Log("Projectile attached to boss: " + enemy.name);
         }
         PunyaEnemy punyaEnemyComponent = enemy.GetComponent<PunyaEnemy>();

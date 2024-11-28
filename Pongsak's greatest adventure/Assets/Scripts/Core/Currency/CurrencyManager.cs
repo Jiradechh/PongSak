@@ -61,13 +61,21 @@ public class CurrencyManager : Singleton<CurrencyManager>
         Debug.Log("Not enough Gold!");
         return false;
     }
-
+    public void DisableGoldDrop()
+    {  
+        Debug.Log("Gold drop feature disabled!");
+    }
     public void EnableGoldDrop()
     {
         canDropGold = true;
         Debug.Log("Gold drop enabled!");
     }
-
+    public void ResetGold()
+    {
+        gold = 0;
+        Debug.Log("Gold has been reset to 0.");
+        RaiseCurrencyUpdated();
+    }
     public void RaiseCurrencyUpdated()
     {
         OnCurrencyUpdated?.Invoke();

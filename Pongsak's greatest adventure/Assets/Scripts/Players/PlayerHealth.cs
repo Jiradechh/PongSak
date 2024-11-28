@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
 {
@@ -17,7 +18,8 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
     public float vibrationDuration = 0.5f;
     public int damageTestValue = 25;
     public bool isDead = false;
-
+    public PlayerCombat playerCombat;
+    public PlayerHealth playerHealth;
     public HeartUI heartUI;
 
     [Header("Animation Settings")]
@@ -33,6 +35,9 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
     protected override void Awake()
     {
         base.Awake();
+        playerCombat = PlayerCombat.Instance;
+        playerController = PlayerController.Instance;
+        playerHealth = this;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -88,6 +93,7 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
         if (hasCarti)
         {
             Debug.Log("Carti item consumed: Player respawns without returning to the lobby!");
+            hasCarti = false;
             StartCoroutine(ReviveWithCarti());
             return;
         }
@@ -97,10 +103,18 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
 
         animator.SetTrigger("Die");
         playerController.enabled = false;
-
+        ResetAllPurchasedEffects();
         StageManager.Instance.ResetToFirstStage();
 
-       
+        CurrencyManager currencyManager = FindObjectOfType<CurrencyManager>();
+        if (currencyManager != null)
+        {
+            currencyManager.ResetGold();
+        }
+        else
+        {
+            Debug.LogError("CurrencyManager not found in the scene. Please ensure it is added.");
+        }
 
         PlayerRespawnManager respawnManager = FindObjectOfType<PlayerRespawnManager>();
         if (respawnManager != null)
@@ -113,19 +127,38 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
         }
     }
 
-    
+    private void ResetAllPurchasedEffects()
+    {
+        Debug.Log("Resetting all purchased item effects.");
+
+        PlayerController.Instance.DecreaseMaxDashes();
+        playerCombat.DecreaseMaxProjectiles();
+        playerCombat.DisableSlowEffect();
+        CurrencyManager.Instance.DisableGoldDrop();
+        PlayerController.Instance.DecreaseDashSpeed(5f);
+        playerCombat.DisableAOEProjectiles();
+        playerCombat.DisableStunEffect();
+        PlayerController.Instance.SetMoveSpeed(2f);
+        CinemachineVirtualCamera camera = FindObjectOfType<CinemachineVirtualCamera>();
+        if (camera != null)
+        {
+            camera.m_Lens.FieldOfView = 15f;
+        }
+
+        Debug.Log("All purchased item effects reset successfully.");
+    }
+
     private IEnumerator ReviveWithCarti()
     {
-        hasCarti = false;
-        Debug.Log("Reviving player in 2 seconds...");
-
-        yield return new WaitForSeconds(2f);
-
-        RestoreToMaxHealth();
+        Debug.Log("Reviving player with Carti item...");
+        yield return new WaitForSeconds(3f);
+        playerHealth.RestoreToMaxHealth();
         isDead = false;
-        animator.SetTrigger("Revive");
         playerController.enabled = true;
-        Debug.Log("Player has been revived!");
+        playerController.ResetControllerState();
+        playerCombat.ResetCombatState();
+
+        Debug.Log("Player revived successfully with Carti item!");
     }
     public void IncreaseMaxHealth(int amount)
     {

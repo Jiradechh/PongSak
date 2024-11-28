@@ -45,10 +45,10 @@ public class PlayerRespawnManager : Singleton<PlayerRespawnManager>
         playerCombat.enabled = false;
 
         
-       // SaveManager.Instance.SaveBaseHeavyAttackDamage(playerCombat.baseHeavyAttackDamage);
+        //SaveManager.Instance.SaveBaseHeavyAttackDamage(playerCombat.baseHeavyAttackDamage);
         //SaveManager.Instance.SaveBaseLightAttackDamage(playerCombat.baseLightAttackDamage);
         //SaveManager.Instance.SaveMaxHealth(playerHealth.maxHealth);
-       // SaveManager.Instance.SaveGems(currencyManager.gems);
+        //SaveManager.Instance.SaveGems(currencyManager.gems);
 
         yield return new WaitForSeconds(respawnDelay);
 

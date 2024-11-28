@@ -179,7 +179,7 @@ MonoBehaviour:
   durationKnockback: 0.5
   attackDamage: 20
   attackRange: 0.5
-  delayAttack: 0
+  delayAttack: 0.2
   detectionRange: 1.5
   rangedAttackRange: 3
   reloadItemPrefab: {fileID: 1423806439239430128, guid: 9e061d340f0fb3c4f89944a7106e4507,

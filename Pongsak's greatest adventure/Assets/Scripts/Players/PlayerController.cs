@@ -6,7 +6,7 @@ public class PlayerController : Singleton<PlayerController>
 {
     #region Public Variables
     public float moveSpeed = 5f;
-    public float dashSpeed = 15f;
+    public float dashSpeed = 5f;
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
     public int maxDashes = 2;
@@ -52,7 +52,12 @@ public class PlayerController : Singleton<PlayerController>
 
     void Update()
     {
-        if (isUIActive) return;
+
+        if (ShopSystemGold.IsShopOpen || ShopSystemGold.IsPopupActive || ShopSystem.IsShopOpen)
+        {
+            
+            return;
+        }
 
         if (canMove)
         {
@@ -176,19 +181,44 @@ public class PlayerController : Singleton<PlayerController>
         remainingDashes = maxDashes;
         dashOnCooldown = false;
     }
+
+
     #endregion
 
     #region Dash Upgrade
+    private const float DefaultDashSpeed = 5f;
     public void IncreaseMaxDashes()
     {
         maxDashes++;
         remainingDashes = maxDashes;
         Debug.Log("Player's max dashes increased to " + maxDashes);
     }
+    public void DecreaseMaxDashes()
+    {
+        if (maxDashes > 1)
+        {
+            maxDashes = 1;
+            remainingDashes = maxDashes;
+            Debug.Log("Player's max dashes decreased to 1.");
+        }
+    }
     public void IncreaseDashSpeed(float amount)
     {
         dashSpeed += amount;
         Debug.Log($"Player's dash speed increased by {amount}. New dash speed: {dashSpeed}");
+    }
+
+    public void DecreaseDashSpeed(float amount)
+    {
+        dashSpeed -= amount;
+        if (dashSpeed < DefaultDashSpeed) dashSpeed = DefaultDashSpeed;
+        Debug.Log($"Player's dash speed decreased by {amount}. New dash speed: {dashSpeed}");
+    }
+
+    public void ResetDashSpeed()
+    {
+        dashSpeed = DefaultDashSpeed;
+        Debug.Log($"Player's dash speed reset to default: {DefaultDashSpeed}");
     }
     #endregion
 

@@ -77,7 +77,10 @@ public class PlayerCombat : Singleton<PlayerCombat>
 
     void Update()
     {
-        if (PlayerController.isUIActive) return;
+        if (ShopSystemGold.IsShopOpen || ShopSystemGold.IsPopupActive || ShopSystem.IsShopOpen)
+        {
+            return;
+        }
 
         HandleAttacks();
         UpdateAttackPointPosition();
@@ -88,13 +91,35 @@ public class PlayerCombat : Singleton<PlayerCombat>
         aoeEnabled = true;
         Debug.Log("Bomb purchased: AOE projectiles enabled!");
     }
-
+    public void DisableAOEProjectiles()
+    {
+        if (aoeEnabled)
+        {
+            aoeEnabled = false;
+            Debug.Log("AOE projectiles have been disabled.");
+        }
+        else
+        {
+            Debug.LogWarning("AOE projectiles are already disabled.");
+        }
+    }
     public void EnableStunEffect()
     {
         stunEffectEnabled = true;
         Debug.Log("Stun effect enabled for future attacks.");
     }
-
+    public void DisableStunEffect()
+    {
+        if (stunEffectEnabled)
+        {
+            stunEffectEnabled = false;
+            Debug.Log("Stun effect has been disabled.");
+        }
+        else
+        {
+            Debug.LogWarning("Stun effect is already disabled.");
+        }
+    }
     private void HandleAttacks()
     {
         if (PlayerController.isUIActive) return;
@@ -253,15 +278,39 @@ public class PlayerCombat : Singleton<PlayerCombat>
         slowEffectEnabled = true;
         Debug.Log("Slow Effect enabled for future projectiles.");
     }
-
+    public void DisableSlowEffect()
+    {
+        if (slowEffectEnabled)
+        {
+            slowEffectEnabled = false;
+            Debug.Log("Slow Effect has been disabled for projectiles.");
+        }
+        else
+        {
+            Debug.LogWarning("Slow Effect is already disabled.");
+        }
+    }
     public void IncreaseMaxProjectiles()
     {
-        maxProjectiles++;
-        remainingProjectiles = maxProjectiles;
-        Debug.Log("Player's max projectiles increased to " + maxProjectiles);
+        {
+            maxProjectiles++;
+            remainingProjectiles = maxProjectiles;
+
+            
+            projectileUIManager.UpdateProjectileUI(remainingProjectiles);
+
+            Debug.Log($"Player's max projectiles increased to {maxProjectiles}");
+        }
     }
-
-
+    public void DecreaseMaxProjectiles()
+    {
+        if (maxProjectiles > 1)
+        {
+            maxProjectiles = 1;
+            remainingProjectiles = maxProjectiles;
+            Debug.Log("Player's max projectiles decreased to 1.");
+        }
+    }
     public void ReloadProjectiles()
     {
         if (remainingProjectiles < maxProjectiles)
