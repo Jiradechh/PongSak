@@ -210,7 +210,7 @@ public class SaikrokEnemy : MonoBehaviour, IDamageable
 
         animator.SetTrigger("Hurt");
         isHurt = true;
-
+        SoundManager.Instance.PlayEnemyHurtSound();
         if (currentHealth <= 0)
         {
             Die();
@@ -278,7 +278,7 @@ public class SaikrokEnemy : MonoBehaviour, IDamageable
         isDead = true;
         animator.SetTrigger("Die");
         Debug.Log($"{gameObject.name} has died.");
-
+        SoundManager.Instance.PlayEnemyDieSound();
         if (wasHitByProjectile)
         {
             if (reloadItemPrefab != null)

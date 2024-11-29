@@ -38,6 +38,8 @@ public class Treasure : MonoBehaviour
             treasureAnimator.SetTrigger("OpenGold");
         }
 
+        SoundManager.Instance.PlayTreasureOpenSound();
+
         if (IsInBossFinishScene())
         {
             CurrencyManager.Instance.AddGems(gemAmount);

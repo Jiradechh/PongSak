@@ -74,6 +74,8 @@ public class EviGetAttack : MonoBehaviour , IDamageable
     {
         isDead = true;
 
+        SoundManager.Instance.PlayWoodDieSound();
+
         if (deathParticles == null)
         {
             Debug.LogError("Death particles are not assigned!");

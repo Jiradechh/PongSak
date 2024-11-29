@@ -76,7 +76,7 @@ public class BirdsBossEnemy : MonoBehaviour , IDamageable
         Debug.Log(gameObject.name + " took " + damage + " damage. Remaining health: " + currentHealth);
         animator.SetTrigger("Hurt");
         isHurt = true;
-
+        SoundManager.Instance.PlayEnemyHurtSound();
         if (currentHealth <= 0)
         {
             Die();
@@ -103,7 +103,7 @@ public class BirdsBossEnemy : MonoBehaviour , IDamageable
         Debug.Log("Boss has died!");
         isDead = true;
         animator.SetTrigger("Die");
-
+        SoundManager.Instance.PlayEnemyDieSound();
         currentTarget = null;
         isAttacking = false;
 

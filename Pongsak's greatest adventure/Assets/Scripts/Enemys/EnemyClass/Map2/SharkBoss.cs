@@ -10,6 +10,10 @@ public class SharkBoss : MonoBehaviour, IDamageable
     public float moveSpeed = 3f;
     public GameObject reloadItemPrefab;
 
+    [Header("Associated Objects")]
+    public GameObject husharkwater; 
+    private SpriteRenderer husharkwaterSpriteRenderer;
+
     [Header("Attack Settings")]
     public float attackRange = 2f;
     public int attackDamage = 20;
@@ -35,7 +39,8 @@ public class SharkBoss : MonoBehaviour, IDamageable
     private bool onAttack = false;
     private bool canMove = true;
     private bool wasHitByProjectile = false;
-    private int currentDamageBuff = 0;
+    private bool isBuffed = false;
+    private int currentDamageBuff = 25;
     private float nextAttackTime = 0f;
     private SpriteRenderer spriteRenderer;
 
@@ -45,6 +50,7 @@ public class SharkBoss : MonoBehaviour, IDamageable
         player = GameObject.FindWithTag("Player").transform;
         playerHealth = player.GetComponent<PlayerHealth>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        husharkwaterSpriteRenderer = husharkwater.GetComponent<SpriteRenderer>();
         health = maxHealth;
 
         StartCoroutine(SpawnTailsRoutine());
@@ -112,7 +118,7 @@ public class SharkBoss : MonoBehaviour, IDamageable
         if (!isDead)
         {
             health -= (damage + currentDamageBuff);
-
+            SoundManager.Instance.PlayEnemyHurtSound();
             if (health > 0)
             {
                 Debug.Log($"SharkBoss took {damage} damage, current health: {health}");
@@ -125,12 +131,23 @@ public class SharkBoss : MonoBehaviour, IDamageable
         }
     }
 
+    public void ApplyBuff(int damageIncrease)
+    {
+        if (!isBuffed)
+        {
+            currentDamageBuff += damageIncrease;
+            isBuffed = true;
+            wasHitByProjectile = true;
+            Debug.Log("Enemy buffed. Extra damage: " + currentDamageBuff);
+        }
+    }
+
     private void Die()
     {
         isDead = true;
         rigidbody3D.velocity = Vector3.zero;
         Debug.Log("SharkBoss has been defeated!");
-
+        SoundManager.Instance.PlayEnemyDieSound();
         if (wasHitByProjectile && reloadItemPrefab != null)
         {
             DropReloadItem();
@@ -183,10 +200,12 @@ public class SharkBoss : MonoBehaviour, IDamageable
                 rigidbody3D.velocity = Vector3.zero;
 
                 Transform retreatPoint = retreatPoints[Random.Range(0, retreatPoints.Length)];
-                rigidbody3D.MovePosition(retreatPoint.position);
-
                 Debug.Log("SharkBoss is retreating.");
-                yield return new WaitForSeconds(retreatDuration);
+
+                yield return StartCoroutine(SmoothMoveToPositionWithFlip(retreatPoint.position, retreatDuration));
+
+                Debug.Log("SharkBoss is resting at the retreat point.");
+                yield return new WaitForSeconds(4f);
 
                 isRetreating = false;
                 canMove = true;
@@ -195,11 +214,36 @@ public class SharkBoss : MonoBehaviour, IDamageable
         }
     }
 
-    private void FlipSprite(float direction)
+    private IEnumerator SmoothMoveToPositionWithFlip(Vector3 targetPosition, float duration)
     {
-        spriteRenderer.flipX = direction > 0 ? true : false;
-    }
+        Vector3 startPosition = transform.position;
+        float elapsedTime = 0f;
 
+        while (elapsedTime < duration)
+        {
+            Vector3 direction = (targetPosition - transform.position).normalized;
+
+            FlipSprite(direction.x);
+
+            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        transform.position = targetPosition;
+    }
+    private void FlipSprite(float directionX)
+    {
+        bool shouldFlip = directionX > 0; 
+
+        spriteRenderer.flipX = shouldFlip;
+
+        if (husharkwaterSpriteRenderer != null)
+        {
+            husharkwaterSpriteRenderer.flipX = shouldFlip;
+        }
+    }
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

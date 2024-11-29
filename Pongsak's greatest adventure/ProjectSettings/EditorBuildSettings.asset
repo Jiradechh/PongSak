@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/PressToStart.unity
+    path: Assets/Scenes/MainMenu.unity
     guid: 8deaa32283b2c4a43b0494d8efd72635
   - enabled: 1
     path: Assets/Scenes/Lobby.unity
@@ -30,11 +30,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Map1/Map1-6.unity
     guid: 865184d9013c33a43adfa38d8e82a36c
   - enabled: 1
-    path: Assets/Scenes/Map1/BossScene1.unity
-    guid: 26bbc84c3dc50f24b99b1cbda31c35f7
-  - enabled: 1
     path: Assets/Scenes/Map1/ShopScene1.unity
     guid: 6f98c5d3f57f8564a80b5e8478203275
+  - enabled: 1
+    path: Assets/Scenes/Map1/BossScene1.unity
+    guid: 26bbc84c3dc50f24b99b1cbda31c35f7
   - enabled: 0
     path: Assets/Scenes/TEST.unity
     guid: 0173ea9563b49c748be47df7646affe8

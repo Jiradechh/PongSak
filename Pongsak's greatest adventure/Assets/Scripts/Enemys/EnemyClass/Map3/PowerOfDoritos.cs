@@ -51,7 +51,7 @@ public class PowerOfDoritos : MonoBehaviour
 
     IEnumerator RubikDuration()
     {
-        yield return new WaitForSeconds(12f);
+        yield return new WaitForSeconds(3f);
         Destroy(this.gameObject);
     }
 }

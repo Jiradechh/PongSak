@@ -91,10 +91,12 @@ public class PlayerController : Singleton<PlayerController>
         if (isMoving)
         {
             PlayWalkParticles();
+            SoundManager.Instance.PlayWalkSound();
         }
         else
         {
             StopWalkParticles();
+            SoundManager.Instance.StopWalkSound();
         }
     }
 
@@ -164,6 +166,8 @@ public class PlayerController : Singleton<PlayerController>
         PlayerHealth.Instance.isInvincible = true;
         animator.ResetTrigger("Dash");
         animator.SetTrigger("Dash");
+
+        SoundManager.Instance.PlayDashSound();
 
         remainingDashes--;
         Vector3 dashDirection = circleIndicator.transform.up;
@@ -256,6 +260,7 @@ public class PlayerController : Singleton<PlayerController>
         animator.Play("Idle");
         StopWalkParticles();
     }
+
     #endregion
 
     #region Circle Indicator Logic

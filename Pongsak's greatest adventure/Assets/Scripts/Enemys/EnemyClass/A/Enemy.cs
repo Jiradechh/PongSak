@@ -11,7 +11,7 @@ public enum EnemyType
     Ranged,
 }
 
-public class Enemy : MonoBehaviour, IDamageable , TakeDamage
+public class Enemy : MonoBehaviour, IDamageable
 {
     #region Variables
     NavMeshAgent navMash;
@@ -178,6 +178,10 @@ public class Enemy : MonoBehaviour, IDamageable , TakeDamage
 
     public void TakeDamage(int damage)
     {
+        if (playerHealth == null)
+        {
+            Debug.LogError("PlayerHealth component not found on player!");
+        }
         if (!isDead)
         {
             health -= (damage + currentDamageBuff);
@@ -186,6 +190,7 @@ public class Enemy : MonoBehaviour, IDamageable , TakeDamage
             {
                 StartCoroutine(KnockBack());
                 animator.SetTrigger("Hurt");
+                SoundManager.Instance.PlayEnemyHurtSound();
             }
             else
             {
@@ -239,6 +244,8 @@ public class Enemy : MonoBehaviour, IDamageable , TakeDamage
             isDead = true;
             animator.SetTrigger("Die");
             canMove = false;
+
+            SoundManager.Instance.PlayEnemyDieSound();
 
             if (navMash != null)
             {
@@ -315,11 +322,13 @@ public class Enemy : MonoBehaviour, IDamageable , TakeDamage
 
     private IEnumerator StopMoveAttack()
     {
+        Debug.Log("Attack coroutine started.");
         onAttack = true;
         canMove = false;
         navMash.speed = 0;
-        animator.Play("E1_Idle");
+        animator.Play("Idle");
         yield return new WaitForSeconds(delayAttack);
+        Debug.Log("Attempting to attack the player.");
         animator.SetTrigger("Attack");
         nextAttackTime = Time.time + attackCooldown;
     }

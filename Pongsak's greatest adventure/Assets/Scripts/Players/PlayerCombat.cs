@@ -30,12 +30,6 @@ public class PlayerCombat : Singleton<PlayerCombat>
     public float lightAttackCooldown = 0.5f;
     public float heavyAttackCooldown = 1.5f;
 
-    [Header("Audio Settings")]
-    public AudioSource audioSource; 
-    public AudioClip fireProjectileClip;
-    public AudioClip lightAttackClip;
-    public AudioClip heavyAttackClip;
-
     [Header("Layers and References")]
     public LayerMask attackLayers;
     public SpriteRenderer playerSprite;
@@ -51,6 +45,8 @@ public class PlayerCombat : Singleton<PlayerCombat>
     private bool stunEffectEnabled = false;
 
     public float meleeAttackPointDistance = 1.0f;
+
+    public Animator effAttack;
 
     protected override void Awake()
     {
@@ -139,15 +135,9 @@ public class PlayerCombat : Singleton<PlayerCombat>
         canLightAttack = false;
         playerController.canMove = false;
         animator.SetTrigger("LightAttack");
+        effAttack.Play("AttackEff");
 
-        if (audioSource != null && lightAttackClip != null)
-        {
-            audioSource.PlayOneShot(lightAttackClip);
-        }
-        else
-        {
-            Debug.LogWarning("AudioSource or AudioClip for light attack is missing!");
-        }
+        SoundManager.Instance.PlayEffect(SoundManager.Instance.lightAttackClip);
 
         Collider[] hitTargets = Physics.OverlapSphere(meleeAttackPoint.position, attackRange, attackLayers);
         foreach (Collider target in hitTargets)
@@ -172,15 +162,9 @@ public class PlayerCombat : Singleton<PlayerCombat>
         canHeavyAttack = false;
         playerController.canMove = false;
         animator.SetTrigger("HeavyAttack");
+        effAttack.Play("AttackEff2");
 
-        if (audioSource != null && heavyAttackClip != null)
-        {
-            audioSource.PlayOneShot(heavyAttackClip);
-        }
-        else
-        {
-            Debug.LogWarning("AudioSource or AudioClip for heavy attack is missing!");
-        }
+        SoundManager.Instance.PlayEffect(SoundManager.Instance.heavyAttackClip);
 
         Collider[] hitTargets = Physics.OverlapSphere(meleeAttackPoint.position, attackRange, attackLayers);
         foreach (Collider target in hitTargets)
@@ -255,11 +239,6 @@ public class PlayerCombat : Singleton<PlayerCombat>
             if (stunEffectEnabled)
             {
                 spell.EnableStun();
-            }
-
-            if (audioSource != null && fireProjectileClip != null)
-            {
-                audioSource.PlayOneShot(fireProjectileClip);
             }
             else
             {

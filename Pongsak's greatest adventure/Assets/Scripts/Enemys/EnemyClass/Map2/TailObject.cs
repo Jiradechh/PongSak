@@ -49,7 +49,6 @@ public class TailObject : MonoBehaviour , IDamageable
         }
     }
 
-    // เริ่มโจมตีผู้เล่นด้วย delay
     private IEnumerator AttackPlayer(PlayerHealth playerHealth)
     {
         if (playerHealth == null) yield break;
@@ -57,9 +56,8 @@ public class TailObject : MonoBehaviour , IDamageable
         isAttacking = true;
 
         Debug.Log("Preparing to attack the player...");
-        yield return new WaitForSeconds(attackDelay); // รอ delay ก่อนทำดาเมจ
+        yield return new WaitForSeconds(attackDelay);
 
-        // ทำดาเมจใส่ผู้เล่น
         int totalDamage = aoeDamage + currentDamageBuff;
         playerHealth.TakeDamage(totalDamage);
         Debug.Log($"Player took {totalDamage} damage!");
@@ -67,7 +65,6 @@ public class TailObject : MonoBehaviour , IDamageable
         isAttacking = false;
         isOnCooldown = true;
 
-        // รอ cooldown ก่อนที่จะโจมตีอีกครั้ง
         Debug.Log($"Entering cooldown for {attackCooldown} seconds.");
         yield return new WaitForSeconds(attackCooldown);
         isOnCooldown = false;

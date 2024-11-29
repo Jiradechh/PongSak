@@ -6,63 +6,63 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 
-public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
-{
-    #region Public Variables
-    public int maxHealth = 100;
-    public int currentHealth;
-    public SpriteRenderer spriteRenderer;
-    public float blinkDuration = 3f;
-    public PlayerController playerController;
-    public float vibrationStrength = 0.5f;
-    public float vibrationDuration = 0.5f;
-    public int damageTestValue = 25;
-    public bool isDead = false;
-    public PlayerCombat playerCombat;
-    public PlayerHealth playerHealth;
-    public HeartUI heartUI;
-
-    [Header("Animation Settings")]
-    public Animator animator;
-
-    public bool hasCarti = false;
-    #endregion
-
-    #region Private Variables
-    public bool isInvincible = false;
-    #endregion
-
-    protected override void Awake()
+    public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
     {
-        base.Awake();
-        playerCombat = PlayerCombat.Instance;
-        playerController = PlayerController.Instance;
-        playerHealth = this;
-        DontDestroyOnLoad(gameObject);
-    }
+        #region Public Variables
+        public int maxHealth = 100;
+        public int currentHealth;
+        public SpriteRenderer spriteRenderer;
+        public float blinkDuration = 3f;
+        public PlayerController playerController;
+        public float vibrationStrength = 0.5f;
+        public float vibrationDuration = 0.5f;
+        public int damageTestValue = 25;
+        public bool isDead = false;
+        public PlayerCombat playerCombat;
+        public PlayerHealth playerHealth;
+        public HeartUI heartUI;
 
-    #region Unity Callbacks
-    void Start()
-    {
-        /*if (SaveManager.Instance.onContinue)
+        [Header("Animation Settings")]
+        public Animator animator;
+
+        public bool hasCarti = false;
+        #endregion
+
+        #region Private Variables
+        public bool isInvincible = false;
+        #endregion
+
+        protected override void Awake()
         {
-            //Load Savegems
-            maxHealth = SaveManager.Instance.saveData.maxHealth;
-        }*/
-
-        currentHealth = maxHealth;
-        heartUI.UpdateHearts(currentHealth, maxHealth);
-    }
-
-    void Update()
-    {
-        
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Debug.Log("Test Damage Triggered");
-            TakeDamage(damageTestValue);
+            base.Awake();
+            playerCombat = PlayerCombat.Instance;
+            playerController = PlayerController.Instance;
+            playerHealth = this;
+            DontDestroyOnLoad(gameObject);
         }
-    }
+
+        #region Unity Callbacks
+        void Start()
+        {
+            /*if (SaveManager.Instance.onContinue)
+            {
+                //Load Savegems
+                maxHealth = SaveManager.Instance.saveData.maxHealth;
+            }*/
+
+            currentHealth = maxHealth;
+            heartUI.UpdateHearts(currentHealth, maxHealth);
+        }
+
+        void Update()
+        {
+        
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                Debug.Log("Test Damage Triggered");
+                TakeDamage(damageTestValue);
+            }
+        }
     #endregion
 
     #region Health Logic
@@ -80,37 +80,31 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
             }
             else
             {
+                SoundManager.Instance.PlayEffect(SoundManager.Instance.hurtClip);
                 StartCoroutine(HurtAnimation());
                 StartCoroutine(BlinkEffect());
             }
         }
     }
-
     public void KnockBack()
-    {
-        StartCoroutine(DelayKnockBack());
-    }
+        {
+            StartCoroutine(DelayKnockBack());
+        }
 
-    IEnumerator DelayKnockBack()
-    {
-        yield return new WaitForSeconds(0.2f);
-        playerController.rb.Sleep();
-        playerController.rb.velocity = Vector3.zero;
-    }
+        IEnumerator DelayKnockBack()
+        {
+            yield return new WaitForSeconds(0.2f);
+            playerController.rb.Sleep();
+            playerController.rb.velocity = Vector3.zero;
+        }
     private void Die()
     {
         if (isDead) return;
 
-        if (hasCarti)
-        {
-            Debug.Log("Carti item consumed: Player respawns without returning to the lobby!");
-            hasCarti = false;
-            StartCoroutine(ReviveWithCarti());
-            return;
-        }
-
         Debug.Log("Player has died.");
         isDead = true;
+
+        SoundManager.Instance.PlayEffect(SoundManager.Instance.dieClip);
 
         animator.SetTrigger("Die");
         playerController.enabled = false;
@@ -139,93 +133,93 @@ public class PlayerHealth : Singleton<PlayerHealth> , TakeDamage
     }
 
     private void ResetAllPurchasedEffects()
-    {
-        Debug.Log("Resetting all purchased item effects.");
-
-        PlayerController.Instance.DecreaseMaxDashes();
-        playerCombat.DecreaseMaxProjectiles();
-        playerCombat.DisableSlowEffect();
-        CurrencyManager.Instance.DisableGoldDrop();
-        PlayerController.Instance.DecreaseDashSpeed(5f);
-        playerCombat.DisableAOEProjectiles();
-        playerCombat.DisableStunEffect();
-        PlayerController.Instance.SetMoveSpeed(2f);
-        CinemachineVirtualCamera camera = FindObjectOfType<CinemachineVirtualCamera>();
-        if (camera != null)
         {
-            camera.m_Lens.FieldOfView = 15f;
+            Debug.Log("Resetting all purchased item effects.");
+
+            PlayerController.Instance.DecreaseMaxDashes();
+            playerCombat.DecreaseMaxProjectiles();
+            playerCombat.DisableSlowEffect();
+            CurrencyManager.Instance.DisableGoldDrop();
+            PlayerController.Instance.DecreaseDashSpeed(5f);
+            playerCombat.DisableAOEProjectiles();
+            playerCombat.DisableStunEffect();
+            PlayerController.Instance.SetMoveSpeed(2f);
+            CinemachineVirtualCamera camera = FindObjectOfType<CinemachineVirtualCamera>();
+            if (camera != null)
+            {
+                camera.m_Lens.FieldOfView = 15f;
+            }
+
+            Debug.Log("All purchased item effects reset successfully.");
         }
 
-        Debug.Log("All purchased item effects reset successfully.");
-    }
-
-    private IEnumerator ReviveWithCarti()
-    {
-        Debug.Log("Reviving player with Carti item...");
-        yield return new WaitForSeconds(3f);
-        playerHealth.RestoreToMaxHealth();
-        isDead = false;
-        playerController.enabled = true;
-        playerController.ResetControllerState();
-        playerCombat.ResetCombatState();
-
-        Debug.Log("Player revived successfully with Carti item!");
-    }
-    public void IncreaseMaxHealth(int amount)
-    {
-        maxHealth += amount;
-        currentHealth = maxHealth;
-        heartUI.UpdateHearts(currentHealth, maxHealth);
-        Debug.Log($"Max Health increased by {amount}. New Max Health: {maxHealth}");
-    }
-
-    public void RestoreToMaxHealth()
-    {
-        currentHealth = maxHealth;
-        heartUI.UpdateHearts(currentHealth, maxHealth);
-        Debug.Log("Player's health restored to max HP.");
-    }
-
-    public void ActivateAvoidNextHit()
-    {
-        isInvincible = true;
-        Debug.Log("Player will avoid the next hit.");
-    }
-    #endregion
-
-    #region Hurt Animation and Effects
-    private IEnumerator HurtAnimation()
-    {
-        animator.SetTrigger("Hurt");
-        playerController.enabled = true;
-
-        if (Gamepad.current != null)
+        private IEnumerator ReviveWithCarti()
         {
-            Gamepad.current.SetMotorSpeeds(vibrationStrength, vibrationStrength);
-            yield return new WaitForSeconds(vibrationDuration);
-            Gamepad.current.SetMotorSpeeds(0, 0);
+            Debug.Log("Reviving player with Carti item...");
+            yield return new WaitForSeconds(3f);
+            playerHealth.RestoreToMaxHealth();
+            isDead = false;
+            playerController.enabled = true;
+            playerController.ResetControllerState();
+            playerCombat.ResetCombatState();
+
+            Debug.Log("Player revived successfully with Carti item!");
+        }
+        public void IncreaseMaxHealth(int amount)
+        {
+            maxHealth += amount;
+            currentHealth = maxHealth;
+            heartUI.UpdateHearts(currentHealth, maxHealth);
+            Debug.Log($"Max Health increased by {amount}. New Max Health: {maxHealth}");
         }
 
-        yield return new WaitForSeconds(1f);
-        playerController.enabled = true;
-    }
-
-    private IEnumerator BlinkEffect()
-    {
-        isInvincible = true;
-        float elapsedTime = 0f;
-        bool isVisible = true;
-
-        while (elapsedTime < blinkDuration)
+        public void RestoreToMaxHealth()
         {
-            isVisible = !isVisible;
-            spriteRenderer.enabled = isVisible;
-            elapsedTime += 0.1f;
-            yield return new WaitForSeconds(0.1f);
+            currentHealth = maxHealth;
+            heartUI.UpdateHearts(currentHealth, maxHealth);
+            Debug.Log("Player's health restored to max HP.");
         }
 
-        spriteRenderer.enabled = true;
-        isInvincible = false;
+        public void ActivateAvoidNextHit()
+        {
+            isInvincible = true;
+            Debug.Log("Player will avoid the next hit.");
+        }
+        #endregion
+
+        #region Hurt Animation and Effects
+        private IEnumerator HurtAnimation()
+        {
+            animator.SetTrigger("Hurt");
+            playerController.enabled = true;
+
+            if (Gamepad.current != null)
+            {
+                Gamepad.current.SetMotorSpeeds(vibrationStrength, vibrationStrength);
+                yield return new WaitForSeconds(vibrationDuration);
+                Gamepad.current.SetMotorSpeeds(0, 0);
+            }
+
+            yield return new WaitForSeconds(1f);
+            playerController.enabled = true;
+        }
+
+        private IEnumerator BlinkEffect()
+        {
+            isInvincible = true;
+            float elapsedTime = 0f;
+            bool isVisible = true;
+
+            while (elapsedTime < blinkDuration)
+            {
+                isVisible = !isVisible;
+                spriteRenderer.enabled = isVisible;
+                elapsedTime += 0.1f;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            spriteRenderer.enabled = true;
+            isInvincible = false;
+        }
+        #endregion
     }
-    #endregion
-}

@@ -132,6 +132,8 @@ public class SpellProjectile : MonoBehaviour
         Enemy enemyComponent = enemy.GetComponent<Enemy>();
         BirdsBossEnemy bossComponent = enemy.GetComponent<BirdsBossEnemy>();
         TailObject tailObjectComponent = enemy.GetComponent<TailObject>();
+        SharkBoss sharkBossComponent =  enemy.GetComponent<SharkBoss>();
+        DoritosBoss doritosComponent = enemy.GetComponent<DoritosBoss>();
 
         if (enemyComponent != null)
         {
@@ -154,10 +156,40 @@ public class SpellProjectile : MonoBehaviour
             tailObjectComponent.ApplyBuff(damageBuff);
             Debug.Log("Projectile attached to boss: " + enemy.name);
         }
+        else if (sharkBossComponent != null)
+        {
+            sharkBossComponent.ApplyBuff(damageBuff);
+            Debug.Log("Projectile attached to boss: " + enemy.name);
+        }
+        else if (doritosComponent != null)
+        {
+            doritosComponent.ApplyBuff(damageBuff);
+            Debug.Log("Projectile attached to boss: " + enemy.name);
+        }
         PunyaEnemy punyaEnemyComponent = enemy.GetComponent<PunyaEnemy>();
+        
         if (punyaEnemyComponent != null)
         {
             punyaEnemyComponent.SetWasHitByProjectile(true);
+            Debug.Log($"{enemy.name} was hit by a projectile. Setting wasHitByProjectile to true.");
+
+            if (slowEffectEnabled)
+            {
+                Debug.Log($"Applying slow effect to {enemy.name}");
+                punyaEnemyComponent.ApplyPermanentSlow(0.5f);
+            }
+
+            if (stunEffectEnabled)
+            {
+                Debug.Log($"Stunning {enemy.name} for {stunDuration} seconds.");
+                punyaEnemyComponent.Stun(stunDuration);
+            }
+        }
+        SaikrokEnemy saikrokEnemy = enemy.GetComponent<SaikrokEnemy>();
+
+        if (saikrokEnemy != null)
+        {
+            saikrokEnemy.SetWasHitByProjectile(true);
             Debug.Log($"{enemy.name} was hit by a projectile. Setting wasHitByProjectile to true.");
 
             if (slowEffectEnabled)
