@@ -1,18 +1,17 @@
 using MyInterface;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerOfDoritos : MonoBehaviour 
+public class PowerOfDoritos : MonoBehaviour
 {
     private Rigidbody rigidbody3D;
     private Collider Collider;
 
     public Collider DmCollider;
 
-    public bool OnAttack = true;  
+    public bool OnAttack = true;
 
-
+    [HideInInspector] public float duration = 3f;
     void Start()
     {
         rigidbody3D = GetComponent<Rigidbody>();
@@ -22,14 +21,9 @@ public class PowerOfDoritos : MonoBehaviour
         StartCoroutine(RubikDuration());
     }
 
-    void Update()
-    {
-       
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer ==  LayerMask.NameToLayer("Ground"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
             rigidbody3D.Sleep();
@@ -44,14 +38,14 @@ public class PowerOfDoritos : MonoBehaviour
             if (other.GetComponent<TakeDamage>() != null)
             {
                 other.GetComponent<TakeDamage>().TakeDamage(20);
-                other.GetComponent <PlayerHealth>().KnockBack();
+                other.GetComponent<PlayerHealth>().KnockBack();
             }
         }
     }
 
     IEnumerator RubikDuration()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(duration);
         Destroy(this.gameObject);
     }
 }

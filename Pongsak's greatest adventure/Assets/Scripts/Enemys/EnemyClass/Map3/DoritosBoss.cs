@@ -37,20 +37,21 @@ public class DoritosBoss : MonoBehaviour , IDamageable
     {
         currentHealth = maxHealth;
         currentTarget = point1;
-        StartCoroutine(SwitchTargetsRoutine());
+        
+        // StartCoroutine(SwitchTargetsRoutine());
     }
 
     private void Update()
     {
-        if (isDead) return;
+        // if (isDead) return;
 
-        MoveToCurrentTarget();
+        // MoveToCurrentTarget();
 
-        if (!isAtRetreat && Time.time >= nextAttackTime && !isAttacking)
-        {
-            StartCoroutine(ExecuteRandomAttack());
-            nextAttackTime = Time.time + attackInterval;
-        }
+        // if (!isAtRetreat && Time.time >= nextAttackTime && !isAttacking)
+        // {
+        //     StartCoroutine(ExecuteRandomAttack());
+        //     nextAttackTime = Time.time + attackInterval;
+        // }
     }
     #endregion
 
