@@ -161,7 +161,7 @@ public class StageManager :  Singleton<StageManager>
         GameObject spawnPoint = GameObject.Find("PlayerSpawnPoint");
         if (spawnPoint != null)
         {
-            GameObject playerPrefab = Resources.Load<GameObject>("PlayerPrefab");
+            GameObject playerPrefab = Resources.Load<GameObject>("Player");
             if (playerPrefab != null)
             {
                 Instantiate(playerPrefab, spawnPoint.transform.position, Quaternion.identity);

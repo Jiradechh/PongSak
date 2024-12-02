@@ -7,12 +7,15 @@ public class DoritosBoss : MonoBehaviour , IDamageable
     #region Public Variables
     public Transform point1;
     public Transform retreatPoint;
+    private Vector3 DownPos;
 
     public float moveSpeed = 2f;
     public GameObject[] attackPrefabs;
     public GameObject reloadItemPrefab;
 
     public SpriteRenderer spriteRenderer;
+    private SetControl setControl;
+    public GameObject boss3cam;
 
     public int maxHealth = 100;
     private int currentHealth;
@@ -37,7 +40,8 @@ public class DoritosBoss : MonoBehaviour , IDamageable
     {
         currentHealth = maxHealth;
         currentTarget = point1;
-        
+        DownPos = this.transform.position;
+        StartCoroutine(ExecuteRandomAttack());
         // StartCoroutine(SwitchTargetsRoutine());
     }
 
@@ -141,7 +145,13 @@ public class DoritosBoss : MonoBehaviour , IDamageable
     #region Attack Logic
     private IEnumerator ExecuteRandomAttack()
     {
-        if (attackPrefabs.Length == 0) yield break;
+        boss3cam.gameObject.SetActive(true);
+        while (transform.position != currentTarget.position)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, currentTarget.position, moveSpeed * Time.deltaTime);
+            yield return true;
+        }
+        yield return new WaitForSeconds(1f);
 
         isAttacking = true;
         Debug.Log("Boss is attacking!");
@@ -154,12 +164,29 @@ public class DoritosBoss : MonoBehaviour , IDamageable
 
         lastAttackIndex = randomIndex;
         GameObject selectedPrefab = attackPrefabs[randomIndex];
-        Instantiate(selectedPrefab, transform.position, Quaternion.identity);
+       setControl =  Instantiate(selectedPrefab, transform.position, Quaternion.identity).GetComponent<SetControl>();
+        setControl.DoritosBoss = this;
 
         Debug.Log($"Boss spawned {selectedPrefab.name}");
 
         yield return new WaitForSeconds(1f);
-        isAttacking = false;
+
+        setControl.CallRubikAttack();
+    }
+    public void CallGoRetreat()
+    {
+        StartCoroutine(GoRetreat());
+    }
+    IEnumerator GoRetreat()
+    {
+        while (transform.position != DownPos)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, DownPos, moveSpeed * Time.deltaTime);
+            yield return true;
+        }
+        yield return new WaitForSeconds(5f);
+
+        StartCoroutine(ExecuteRandomAttack());
     }
     #endregion
 }

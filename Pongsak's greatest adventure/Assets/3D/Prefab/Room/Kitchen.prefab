@@ -9962,6 +9962,7 @@ GameObject:
   - component: {fileID: 6094436561018166644}
   - component: {fileID: 965904954090524911}
   - component: {fileID: 221766344361370756}
+  - component: {fileID: 1578080548373062345}
   m_Layer: 0
   m_Name: Countertop
   m_TagString: Untagged
@@ -10034,6 +10035,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1578080548373062345
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5316875907406875823}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.010414617, y: 0.009503573, z: 0.01095883}
+  m_Center: {x: -0.0000012784076, y: -0.0002482133, z: 0.0004794154}
 --- !u!1 &5933211659406516783
 GameObject:
   m_ObjectHideFlags: 0

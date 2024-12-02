@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   warpGatePrefab: {fileID: 629974879156304096, guid: 6807bcd16df1ea946b97bfa691d14dc2,
     type: 3}
-  treasurePrefab: {fileID: 0}
+  treasurePrefab: {fileID: 1528230988522834829, guid: 1d55848c5c682fb4b8da3510bf0c4a92,
+    type: 3}
   warpGateSpawnLocation: {fileID: 512895897745078629}
   treasureSpawnLocation: {fileID: 512895897745078629}

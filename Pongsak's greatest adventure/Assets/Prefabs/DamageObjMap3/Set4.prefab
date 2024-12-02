@@ -418,6 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DmCollider: {fileID: 147786850179084305}
   OnAttack: 1
+  duration: 3
 --- !u!1 &5948260237702011433
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,6 +428,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7867603196504199536}
+  - component: {fileID: -941516850165430792}
   m_Layer: 0
   m_Name: Set4
   m_TagString: Untagged
@@ -451,6 +453,19 @@ Transform:
   - {fileID: 111585412934208865}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-941516850165430792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5948260237702011433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e15f7d602c9db41ab028fb30fac1cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allFinished: []
 --- !u!1 &6556081289943919040
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,6 +665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DmCollider: {fileID: 3527916691041121634}
   OnAttack: 1
+  duration: 3
 --- !u!1 &9161374775103896185
 GameObject:
   m_ObjectHideFlags: 0

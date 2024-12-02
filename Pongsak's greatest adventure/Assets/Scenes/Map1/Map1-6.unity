@@ -1361,6 +1361,79 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1001 &160026984
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.027
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.018
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.475
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 512895897745078629, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322179154915816891, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: treasureSpawnLocation
+      value: 
+      objectReference: {fileID: 1448461961}
+    - target: {fileID: 7905951208453122596, guid: eed884061bdc75942bce62b031ff25e5,
+        type: 3}
+      propertyPath: m_Name
+      value: WarpGate&Treasure
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eed884061bdc75942bce62b031ff25e5, type: 3}
 --- !u!1 &185819115
 GameObject:
   m_ObjectHideFlags: 0
@@ -8327,55 +8400,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b4327580117afa4fbc7e4cf9d9255ce, type: 3}
---- !u!1 &962370744
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 962370746}
-  - component: {fileID: 962370745}
-  m_Layer: 0
-  m_Name: Test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &962370745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 962370744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ad8d4629f336f948bd00ec6fdc6cf53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  warpGatePrefab: {fileID: 629974879156304096, guid: 6807bcd16df1ea946b97bfa691d14dc2,
-    type: 3}
-  treasurePrefab: {fileID: 0}
-  warpGateSpawnLocation: {fileID: 962370746}
-  treasureSpawnLocation: {fileID: 0}
---- !u!4 &962370746
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 962370744}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.96, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1033202747
 GameObject:
   m_ObjectHideFlags: 0
@@ -9299,6 +9323,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9682a5436e270343b8e5966601c56b9, type: 3}
+--- !u!1 &1448461960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1448461961}
+  m_Layer: 0
+  m_Name: Tp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1448461961
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448461960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.58, y: -0.051704932, z: -0.35596997}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1468364630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11828,7 +11883,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1913879499}
   - {fileID: 1559666999}
-  - {fileID: 962370746}
   - {fileID: 365265148}
   - {fileID: 1059825328}
   - {fileID: 1841400469}
@@ -11845,3 +11899,5 @@ SceneRoots:
   - {fileID: 83100437}
   - {fileID: 271286860}
   - {fileID: 418820343}
+  - {fileID: 160026984}
+  - {fileID: 1448461961}

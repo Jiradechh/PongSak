@@ -1,26 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
 
 public class SetControl : MonoBehaviour
 {
-    public GameObject rubikShuffle;
-    public List<PowerOfDoritos> allFinished;
+    public List<PowerOfDoritos> AllRubik;
 
-    public float duration;
+    public DoritosBoss DoritosBoss;
+
     void Start()
     {
         for (int i = 0; i < transform.childCount; i++)
         {
-            allFinished.Add(transform.GetChild(i).gameObject.GetComponent<PowerOfDoritos>());
-            allFinished[i].duration = duration;
+            AllRubik.Add(transform.GetChild(i).gameObject.GetComponent<PowerOfDoritos>());
+            AllRubik[i].setControl = this;
+        }   
+    }
+
+    public void RubikDestory(PowerOfDoritos _rubik)
+    {
+        AllRubik.Remove(_rubik);
+
+        if (AllRubik.Count > 0 )
+        {
+            AllRubik[0].CallReadyToAttack(); //Boss â¨ÁµÕµèÍ 
         }
-        // foreach (PowerOfDoritos p in allFinished)
-        // {
-        //     p.gameObject.SetActive(true);
-        // }
-        int rnd = Random.Range(0, allFinished.Count + 1);
-        rubikShuffle = allFinished[rnd].gameObject;
+        else
+        {
+            //<0 ¨ÐÅ§¾×é¹
+            DoritosBoss.CallGoRetreat();
+            Destroy(this.gameObject);
+        }
+    }
+
+    public void CallRubikAttack()
+    {
+        AllRubik[0].CallReadyToAttack();
     }
 
 }

@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3e15f7d602c9db41ab028fb30fac1cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rubikShuffle: {fileID: 0}
+  allFinished: []
 --- !u!1 &1172549147906208242
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,6 +465,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DmCollider: {fileID: 8801922021896156838}
   OnAttack: 1
+  moveSpeed: 0
+  duration: 3
 --- !u!1 &8632154746201515947
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,6 +583,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DmCollider: {fileID: 5404215182722925827}
   OnAttack: 1
+  moveSpeed: 0
+  duration: 3
 --- !u!1 &9145989000348221298
 GameObject:
   m_ObjectHideFlags: 0

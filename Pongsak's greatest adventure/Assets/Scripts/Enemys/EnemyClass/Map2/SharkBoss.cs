@@ -10,8 +10,11 @@ public class SharkBoss : MonoBehaviour, IDamageable
     public float moveSpeed = 3f;
     public GameObject reloadItemPrefab;
 
+    [Header("Animation")]
+    public Animator animator;
+
     [Header("Associated Objects")]
-    public GameObject husharkwater; 
+    public GameObject husharkwater;
     private SpriteRenderer husharkwaterSpriteRenderer;
 
     [Header("Attack Settings")]
@@ -204,8 +207,18 @@ public class SharkBoss : MonoBehaviour, IDamageable
 
                 yield return StartCoroutine(SmoothMoveToPositionWithFlip(retreatPoint.position, retreatDuration));
 
+                if (animator != null)
+                {
+                    animator.SetBool("IsResting", true);
+                }
+
                 Debug.Log("SharkBoss is resting at the retreat point.");
                 yield return new WaitForSeconds(4f);
+
+                if (animator != null)
+                {
+                    animator.SetBool("IsResting", false);
+                }
 
                 isRetreating = false;
                 canMove = true;
@@ -213,7 +226,6 @@ public class SharkBoss : MonoBehaviour, IDamageable
             }
         }
     }
-
     private IEnumerator SmoothMoveToPositionWithFlip(Vector3 targetPosition, float duration)
     {
         Vector3 startPosition = transform.position;
@@ -233,9 +245,10 @@ public class SharkBoss : MonoBehaviour, IDamageable
 
         transform.position = targetPosition;
     }
+
     private void FlipSprite(float directionX)
     {
-        bool shouldFlip = directionX > 0; 
+        bool shouldFlip = directionX > 0;
 
         spriteRenderer.flipX = shouldFlip;
 

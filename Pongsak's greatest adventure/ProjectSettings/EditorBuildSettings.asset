@@ -30,14 +30,59 @@ EditorBuildSettings:
     path: Assets/Scenes/Map1/Map1-6.unity
     guid: 865184d9013c33a43adfa38d8e82a36c
   - enabled: 1
+    path: Assets/Scenes/Map1/BossScene1.unity
+    guid: 26bbc84c3dc50f24b99b1cbda31c35f7
+  - enabled: 1
     path: Assets/Scenes/Map1/ShopScene1.unity
     guid: 6f98c5d3f57f8564a80b5e8478203275
   - enabled: 1
-    path: Assets/Scenes/Map1/BossScene1.unity
-    guid: 26bbc84c3dc50f24b99b1cbda31c35f7
-  - enabled: 0
-    path: Assets/Scenes/TEST.unity
-    guid: 0173ea9563b49c748be47df7646affe8
+    path: Assets/Scenes/Map2/Map2-1.unity
+    guid: 765cafd7fdf30574aa187deea2ec8013
+  - enabled: 1
+    path: Assets/Scenes/Map2/Map2-2.unity
+    guid: 494c9c8441e80904baf0b000881d8d1a
+  - enabled: 1
+    path: Assets/Scenes/Map2/Map2-3.unity
+    guid: 4cc61ee195a98214d94ee1731b170f24
+  - enabled: 1
+    path: Assets/Scenes/Map2/Map2-4.unity
+    guid: 938ea8ec10b17054fa725ba87db43140
+  - enabled: 1
+    path: Assets/Scenes/Map2/Map2-5.unity
+    guid: fce1fe2d3559687418eb1c1004ceb266
+  - enabled: 1
+    path: Assets/Scenes/Map2/Map2-6.unity
+    guid: 333f7d033c9f96a419696c0ea48ac8c2
+  - enabled: 1
+    path: Assets/Scenes/Map2/ShopScene2.unity
+    guid: 1a458737ac6a53f4d93df6ca4722f2b5
+  - enabled: 1
+    path: Assets/Scenes/Map2/BossScene2.unity
+    guid: 0d076948af1f365449c2cdcce63f1063
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-1.unity
+    guid: fedcb0fde40f539448b953c3d2f59644
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-2.unity
+    guid: 6b09b1953c1565b4ba7afb2876db3054
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-3.unity
+    guid: 0abe19f1e6049d947b664d2570417ae8
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-4.unity
+    guid: 7b86b45fdfc42d448adf0cac2ba47532
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-5.unity
+    guid: a67c7297b71455245929c9fb51c84210
+  - enabled: 1
+    path: Assets/Scenes/Map3/Map3-6.unity
+    guid: f83c9134d434d5b4cb297f5151ca14d8
+  - enabled: 1
+    path: Assets/Scenes/Map3/ShopScene3.unity
+    guid: f05f8edf72faa804b8a3777b7bface58
+  - enabled: 1
+    path: Assets/Scenes/Map3/BossScene3.unity
+    guid: df34110a589004646b005209204cc26d
   - enabled: 0
     path: Assets/Scenes/SendAJ.unity
     guid: 01b99aebc14070049bf485a6c0469753
