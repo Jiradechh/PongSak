@@ -24,9 +24,13 @@ public class StageManager :  Singleton<StageManager>
     public AudioClip boss2Song;
     public AudioClip boss3Song;
 
-    [Range(0f, 1f)] public float musicVolume = 1f; // Default volume
+    [Range(0f, 1f)] public float musicVolume = 1f;
     private AudioSource audioSource;
     private Coroutine musicTransitionCoroutine;
+
+    [Header("Light Configurations")]
+    public GameObject map2Light;
+    public GameObject map3Light;
 
     public int currentStage = 1;
     public int currentMap = 1;
@@ -43,8 +47,14 @@ public class StageManager :  Singleton<StageManager>
         }
         audioSource.loop = true;
         audioSource.volume = musicVolume;
-    }
 
+        UpdateLightState();
+    }
+    private void UpdateLightState()
+    {
+        if (map2Light != null) map2Light.SetActive(currentMap == 2);
+        if (map3Light != null) map3Light.SetActive(currentMap == 3);
+    }
     public void WarpToNextStage()
     {
         currentStage++;
@@ -61,7 +71,7 @@ public class StageManager :  Singleton<StageManager>
         {
             LoadBossForCurrentMap();
         }
-        else
+        else if (currentStage > 6)
         {
             GoToNextMap();
         }
@@ -80,7 +90,7 @@ public class StageManager :  Singleton<StageManager>
 
     private void LoadShopForCurrentMap()
     {
-        PlayMapSong(); // Continue map music in the shop
+        PlayMapSong(); 
         string shopScene = currentMap switch
         {
             1 => shopScene1,
@@ -94,6 +104,7 @@ public class StageManager :  Singleton<StageManager>
     private void LoadBossForCurrentMap()
     {
         PlayBossSong();
+
         string bossScene = currentMap switch
         {
             1 => bossScene1,
@@ -101,12 +112,10 @@ public class StageManager :  Singleton<StageManager>
             3 => bossScene3,
             _ => bossScene1
         };
-        LoadScene(bossScene);
 
-        if (currentMap < 3)
-            GoToNextMap();
-        else
-            ResetToFirstStage();
+        LoadScene(bossScene);
+        Debug.Log($"Loading Boss Scene: {bossScene}");
+
     }
 
     private string[] GetRandomStagesForCurrentMap()
@@ -123,14 +132,16 @@ public class StageManager :  Singleton<StageManager>
     public void GoToNextMap()
     {
         currentMap++;
+        if (currentMap > 3) currentMap = 1;
         currentStage = 1;
+        UpdateLightState();
         WarpToNextStage();
     }
-
     private void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        Debug.Log($"Loading scene: {sceneName}");
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -153,6 +164,7 @@ public class StageManager :  Singleton<StageManager>
         }
 
         SpawnPlayer();
+        UpdateLightState();
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
@@ -249,6 +261,7 @@ public class StageManager :  Singleton<StageManager>
         }
 
         audioSource.volume = musicVolume;
+        Debug.Log($"Playing audio clip: {newClip.name} at volume {audioSource.volume}");
     }
 }
 

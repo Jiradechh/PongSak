@@ -335,6 +335,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     protected virtual void HandleAttack()
     {
+                Debug.Log("AAAA");
         if (playerHealth != null && !isDead)
         {
             if (distanceToPlayer <= attackRange)
@@ -381,6 +382,7 @@ public class Enemy : MonoBehaviour, IDamageable
         onAttack = false;
         canMove = true;
         navMash.speed = 1;
+        Debug.Log("aaa");
     }
     #endregion
 

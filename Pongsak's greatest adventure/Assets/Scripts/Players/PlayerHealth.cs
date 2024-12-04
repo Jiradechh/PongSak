@@ -120,15 +120,16 @@ using Cinemachine;
         {
             Debug.LogError("CurrencyManager not found in the scene. Please ensure it is added.");
         }
-
-        PlayerRespawnManager respawnManager = FindObjectOfType<PlayerRespawnManager>();
-        if (respawnManager != null)
+        PlayerCombat playerCombat = PlayerCombat.Instance;
+        if (playerCombat != null)
         {
-            respawnManager.RespawnPlayer();
+            playerCombat.canAttack = false; 
         }
-        else
+        // Show Restart Panel
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
         {
-            Debug.LogError("PlayerRespawnManager not found in the scene. Please ensure it is added.");
+            uiManager.ShowRestartPanel();
         }
     }
 

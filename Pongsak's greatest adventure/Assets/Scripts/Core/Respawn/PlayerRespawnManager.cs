@@ -63,7 +63,6 @@ public class PlayerRespawnManager : Singleton<PlayerRespawnManager>
     {
         if (scene.name == lobbySceneName)
         {
-            
             FindRespawnPointsByName();
 
             Transform respawnPoint = FindAvailableRespawnPoint();
@@ -72,10 +71,20 @@ public class PlayerRespawnManager : Singleton<PlayerRespawnManager>
                 playerController.transform.position = respawnPoint.position;
             }
 
-          
             playerHealth.RestoreToMaxHealth();
             playerHealth.isDead = false;
 
+            Animator animator = playerController.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.Play("P_Idle");
+            }
+            PlayerCombat playerCombat = PlayerCombat.Instance;
+            if (playerCombat != null)
+            {
+                playerCombat.ResetCombatState();
+                playerCombat.canAttack = true;
+            }
             playerController.canMove = true;
             playerController.ResetControllerState();
             playerCombat.ResetCombatState();
@@ -83,7 +92,6 @@ public class PlayerRespawnManager : Singleton<PlayerRespawnManager>
             playerCombat.enabled = true;
         }
     }
-
     private void FindRespawnPointsByName()
     {
         GameObject[] respawnObjects = GameObject.FindGameObjectsWithTag(respawnPointName);

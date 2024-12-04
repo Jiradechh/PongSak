@@ -23,6 +23,11 @@ public class TailObject : MonoBehaviour , IDamageable
     private bool isAttacking = false;
     private bool isOnCooldown = false;
 
+    [Header("Animator")]
+    public Animator animator;
+
+    private bool isIdle = true; // Tracks if the object is idle
+
     void Update()
     {
         if (health <= 0 && !isDead)
@@ -30,10 +35,14 @@ public class TailObject : MonoBehaviour , IDamageable
             Die();
         }
 
+        if (!isAttacking && !isOnCooldown && !isDead)
+        {
+            SetIdle(true);
+        }
+
         CheckPlayerInRange();
     }
 
-    // ตรวจสอบว่าผู้เล่นเข้ามาในรัศมีหรือไม่
     private void CheckPlayerInRange()
     {
         if (isDead || isAttacking || isOnCooldown) return;
@@ -43,6 +52,7 @@ public class TailObject : MonoBehaviour , IDamageable
         {
             if (hitCollider.CompareTag("Player"))
             {
+                SetIdle(false);
                 StartCoroutine(AttackPlayer(hitCollider.GetComponent<PlayerHealth>()));
                 break;
             }
@@ -54,8 +64,14 @@ public class TailObject : MonoBehaviour , IDamageable
         if (playerHealth == null) yield break;
 
         isAttacking = true;
+        SetIdle(false);
 
         Debug.Log("Preparing to attack the player...");
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
+
         yield return new WaitForSeconds(attackDelay);
 
         int totalDamage = aoeDamage + currentDamageBuff;
@@ -71,16 +87,20 @@ public class TailObject : MonoBehaviour , IDamageable
         Debug.Log("Cooldown ended. Ready to attack again.");
     }
 
- 
     public void TakeDamage(int damage)
     {
         if (!isDead)
         {
             health -= (damage + currentDamageBuff);
+            SetIdle(false);
 
             if (health > 0)
             {
-                //animator.SetTrigger("Hurt");
+                Debug.Log("TailObject hurt.");
+                if (animator != null)
+                {
+                    animator.SetTrigger("Hurt");
+                }
             }
             else
             {
@@ -90,7 +110,6 @@ public class TailObject : MonoBehaviour , IDamageable
         }
     }
 
-    // ฟังก์ชัน Apply Buff
     public void ApplyBuff(int damageIncrease)
     {
         if (!isBuffed)
@@ -102,13 +121,17 @@ public class TailObject : MonoBehaviour , IDamageable
         }
     }
 
-    // การตายของ TailObject
     private void Die()
     {
         isDead = true;
+        SetIdle(false);
         Debug.Log("TailObject has died.");
 
-        // ดรอปไอเท็มถ้าโดน projectile
+        if (animator != null)
+        {
+            animator.SetTrigger("Die");
+        }
+
         if (wasHitByProjectile && reloadItemPrefab != null)
         {
             DropReloadItem();
@@ -123,7 +146,15 @@ public class TailObject : MonoBehaviour , IDamageable
         Debug.Log("Dropped reload item on TailObject death.");
     }
 
-    // แสดงระยะ AOE ใน Editor
+    private void SetIdle(bool value)
+    {
+        if (animator != null && isIdle != value)
+        {
+            isIdle = value;
+            animator.SetBool("Idle", isIdle);
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

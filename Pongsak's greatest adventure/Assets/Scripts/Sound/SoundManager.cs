@@ -10,13 +10,12 @@ public class SoundManager : Singleton<SoundManager>
 
     [Header("Audio Clips")]
     public AudioClip walkClip;
-    public AudioClip attackClip;
     public AudioClip lightAttackClip;
     public AudioClip heavyAttackClip;
     public AudioClip hurtClip;
     public AudioClip dieClip;
     public AudioClip dashClip;
-
+    public AudioClip fireProjectileClip;
 
     public AudioClip treasureOpenClip;
 
@@ -109,6 +108,18 @@ public class SoundManager : Singleton<SoundManager>
         else
         {
             Debug.LogWarning("Enemy die sound or effect source is missing!");
+        }
+    }
+
+    public void PlayFireProjectileSound()
+    {
+        if (effectSource != null && fireProjectileClip != null)
+        {
+            effectSource.PlayOneShot(fireProjectileClip);
+        }
+        else
+        {
+            Debug.LogWarning("Fire projectile sound or effect source is missing!");
         }
     }
 }

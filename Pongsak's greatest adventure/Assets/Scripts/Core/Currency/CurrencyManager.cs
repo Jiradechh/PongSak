@@ -76,6 +76,7 @@ public class CurrencyManager : Singleton<CurrencyManager>
         Debug.Log("Gold has been reset to 0.");
         RaiseCurrencyUpdated();
     }
+
     public void RaiseCurrencyUpdated()
     {
         OnCurrencyUpdated?.Invoke();

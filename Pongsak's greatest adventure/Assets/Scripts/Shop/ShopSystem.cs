@@ -19,6 +19,10 @@ public class ShopSystem : MonoBehaviour
     public Sprite cancelNormal;
     public Sprite cancelSelect;
 
+    public AudioClip shopOpenSound;
+    private AudioSource audioSource;
+    public AudioClip proximitySound;
+
     public GameObject[] itemButtons;
     public Color normalColor = Color.white;
     public Color selectedColor = Color.red;
@@ -28,6 +32,13 @@ public class ShopSystem : MonoBehaviour
 
     public TextMeshProUGUI lightAttackDamageText;
     public TextMeshProUGUI maxHealthText;
+
+    private Animator animator;
+    private float idleTimer = 0f;
+    private float idleInterval = 10f;
+
+    private readonly string[] idleAnimationNames = { "Npc_Idle1", "Npc_Idle2", "Npc_Idle3", "Npc_Idle4", "Npc_Idle5" };
+
     #endregion
 
     #region Private Variables
@@ -53,9 +64,14 @@ public class ShopSystem : MonoBehaviour
         {
             proximityIndicatorUI.SetActive(false);
         }
-
+        if (animator != null)
+        {
+            animator.Play("Npc_Idle1");
+        }
         playerHealth = FindObjectOfType<PlayerHealth>();
         UpdateCombatStatsUI();
+        audioSource = gameObject.AddComponent<AudioSource>();
+        animator = GetComponent<Animator>();
     }
 
     private void UpdateCombatStatsUI()
@@ -64,13 +80,25 @@ public class ShopSystem : MonoBehaviour
         {
             lightAttackDamageText.text = playerCombat.baseLightAttackDamage.ToString();
         }
-
+        idleTimer += Time.deltaTime;
+        if (idleTimer >= idleInterval)
+        {
+            PlayRandomIdleAnimation();
+            idleTimer = 0f;
+        }
         if (maxHealthText != null)
         {
             maxHealthText.text = playerHealth.maxHealth.ToString();
         }
     }
-
+    private void PlayRandomIdleAnimation()
+    {
+        if (animator != null)
+        {
+            string randomAnimation = idleAnimationNames[Random.Range(1, idleAnimationNames.Length)];
+            animator.Play(randomAnimation);
+        }
+    }
     private void Update()
     {
         if (playerIsNear && Input.GetKeyDown(KeyCode.Joystick1Button5))
@@ -93,7 +121,14 @@ public class ShopSystem : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerIsNear = true;
-
+            if (audioSource != null && proximitySound != null)
+            {
+                audioSource.PlayOneShot(proximitySound);
+            }
+            if (animator != null)
+            {
+                animator.SetBool("isPlayerNear", true);
+            }
             if (proximityIndicatorUI != null)
             {
                 proximityIndicatorUI.SetActive(true);
@@ -107,6 +142,10 @@ public class ShopSystem : MonoBehaviour
         {
             playerIsNear = false;
 
+            if (animator != null)
+            {
+                animator.SetBool("isPlayerNear", false);
+            }
             if (proximityIndicatorUI != null)
             {
                 proximityIndicatorUI.SetActive(false);
@@ -360,7 +399,10 @@ public class ShopSystem : MonoBehaviour
             IsShopOpen = true;
             isShopOpen = true;
             shopUI.SetActive(true);
-
+            if (shopOpenSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(shopOpenSound);
+            }
             currentIndex = 0;
             UpdateButtonColors();
 

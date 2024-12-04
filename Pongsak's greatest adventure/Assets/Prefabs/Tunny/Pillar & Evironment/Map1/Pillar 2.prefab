@@ -132,3 +132,4 @@ MonoBehaviour:
   objectLifetime: 3
   hitParticleEffect: {fileID: 4142749842425808007, guid: 79307e6caf5fb094bbc939517923374a,
     type: 3}
+  hitSound: {fileID: 8300000, guid: d7b106e7c283a5b44b16ab4cb402e4f0, type: 3}

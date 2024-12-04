@@ -37,6 +37,7 @@ public class PlayerCombat : Singleton<PlayerCombat>
     public PlayerController playerController;
     public Animator animator;
 
+    public bool canAttack = true;
     private bool canLightAttack = true;
     private bool canHeavyAttack = true;
     private bool isAimingProjectile = false;
@@ -46,7 +47,6 @@ public class PlayerCombat : Singleton<PlayerCombat>
 
     public float meleeAttackPointDistance = 1.0f;
 
-    public Animator effAttack;
 
     protected override void Awake()
     {
@@ -118,7 +118,7 @@ public class PlayerCombat : Singleton<PlayerCombat>
     }
     private void HandleAttacks()
     {
-        if (PlayerController.isUIActive) return;
+        if (!canAttack || PlayerController.isUIActive) return;
 
         if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button2)) && canLightAttack)
         {
@@ -135,7 +135,6 @@ public class PlayerCombat : Singleton<PlayerCombat>
         canLightAttack = false;
         playerController.canMove = false;
         animator.SetTrigger("LightAttack");
-        effAttack.Play("AttackEff");
 
         SoundManager.Instance.PlayEffect(SoundManager.Instance.lightAttackClip);
 
@@ -162,7 +161,6 @@ public class PlayerCombat : Singleton<PlayerCombat>
         canHeavyAttack = false;
         playerController.canMove = false;
         animator.SetTrigger("HeavyAttack");
-        effAttack.Play("AttackEff2");
 
         SoundManager.Instance.PlayEffect(SoundManager.Instance.heavyAttackClip);
 
@@ -185,6 +183,8 @@ public class PlayerCombat : Singleton<PlayerCombat>
     }
     private void HandleProjectileFire()
     {
+        if (!canAttack) return;
+
         if (canFireProjectile && (Input.GetKeyDown(KeyCode.JoystickButton1) || Input.GetKeyDown(KeyCode.Q)))
         {
             StartAimingProjectile();
@@ -244,7 +244,7 @@ public class PlayerCombat : Singleton<PlayerCombat>
             {
                 Debug.LogWarning("AudioSource or AudioClip for firing projectile is missing!");
             }
-
+            SoundManager.Instance.PlayEffect(SoundManager.Instance.fireProjectileClip);
             remainingProjectiles--;
             canFireProjectile = remainingProjectiles > 0;
 
@@ -336,6 +336,7 @@ public class PlayerCombat : Singleton<PlayerCombat>
         canLightAttack = true;
         canHeavyAttack = true;
         isAimingProjectile = false;
+        canAttack = true;
         animator.Play("Idle");
     }
 }
